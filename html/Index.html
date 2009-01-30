@@ -1,0 +1,54 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title><!--[$Title]--></title>
+<base href="<!--[$httpRoot]-->" /> 
+<meta http-equiv="content-type" content="text/html; charset=utf-8" /> 
+<link rel="stylesheet" media="screen" href="stylesheet/screen.css" />
+<link rel="shortcut icon" href="images/favicon.ico" />
+</head>
+<body>
+<div id="Wrapper">
+<!--[if isset($Error)]-->
+    <!--[$Error]-->
+<!--[/if]-->
+    <div id="Header">
+        <h1><a href="<!--[$httpRoot]-->"><!--[$HTMLTitle]--></a></h1>
+        <ul>
+            <li>
+                <a href="?a=uploadFile"><img src="images/upload.png" alt="<!--["Upload"]-->"/>
+                <!--["Upload"]--></a>
+            </li>
+            <li>
+                <a href="?a=search"><img src="images/search.png" alt="<!--["Search"]-->"/>
+                <!--["Search"]--></a>
+            </li>
+            <li>
+                <a href="?a=info"><img src="images/info.png" alt="<!--["Informations"]-->"/>
+                <!--["Informations"]--></a>
+            </li>
+        </ul>
+    </div>
+    <div id="Content"><div id="ContentBox">
+        <!--[if isset($Content)]-->
+            <!--[$Content]-->
+        <!--[else]-->
+            <!--[include Sitemap.html]-->
+        <!--[/if]-->
+    </div></div>
+
+    <div id="FooterSpacer"></div>
+</div>
+
+<div id="Footer">
+<ul>
+    <li>Valid XHTML |</li>
+    <li>Valid CSS |</li>
+    <li>Don't panic</li>
+</ul>
+<span>Yet Another File Upload programmed by gandro@gmx.net</span>
+</div>
+</body>
+</html>
+

@@ -1,0 +1,211 @@
+* {
+    margin: 0;
+}
+
+html, body {
+    margin: 0;
+    height: 100%;
+    font-family: serif;
+}
+
+div#Header {
+    text-align: center;
+    background-color: #444440;
+    background-image: url(../images/HeaderGradient.png);
+    background-repeat:repeat-x;
+    background-position: top;
+    color: #ffffff;
+    margin: 0;
+    padding: 2em 2em 0.5em;
+    border-bottom: 2px solid #555555;
+    height: 6.5em;
+}
+
+
+div#Header ul {
+    font-size: smaller;
+    margin: 1em 0;
+}
+
+div#Header ul li {
+    display: inline;
+    list-style-type: none;
+    padding: 0 0.8em;
+}
+
+div#Header ul li img {
+    vertical-align: middle;
+    border: none;
+}
+
+div#Header a {
+    padding-right: 1ex;
+}
+
+div#Header a:link, div#Header a:visited { 
+    color: #ffffff;
+    text-decoration: none;
+}
+
+div#Header a:focus, div#Header a:hover, div#Header a:active { 
+    color: #ffffff;
+    text-decoration: none;
+    background-color: #4F4F4A;
+}
+
+div#Header h1 a:focus, div#Header h1 a:hover, div#Headerh1  a:active { 
+    text-decoration: none;
+    background-color: transparent;
+}
+
+div#Content {
+    text-align: center;
+    background-color: #ffffff;
+    background-image: url(../images/ContentGradient.png);
+    background-repeat: repeat-x;
+    padding: 1.5em 0;
+}
+
+div#Content a:link, div#Content a:visited { 
+    color: #204a87;
+    text-decoration: underline;
+}
+
+div#Content a:focus, div#Content a:hover, div#Content a:active { 
+    color: #3c6e1a;
+    text-decoration: underline;
+}
+
+div#Content div#ContentBox {
+    width: 40em;
+    margin: 0 auto;
+}
+
+div#SelectSource {
+    font-size: small;
+}
+
+img#SourceIcon {
+    margin: 1em;
+}
+
+div#Footer {
+    text-align: center;
+    background-color: #c8c8bd;
+    background-image: url(../images/FooterGradient.png);
+    background-repeat:repeat-x;
+    color: #777770;
+}
+
+div#Footer ul {
+    padding: 30px 0 0;
+    font-size: smaller;
+    list-style-image: none;
+}
+
+div#Footer span {
+    font-size: x-small;
+}
+
+div#Footer ul li {
+    display: inline;
+
+}
+
+div#Wrapper {
+	min-height: 100%;
+	height: auto !important;
+	height: 100%;
+	margin: 0 auto -5em;
+}
+
+
+div#FooterSpacer, div#Footer {
+    height: 5em;
+}
+
+form#FileForm label, form#TextForm label, form#LinkForm label {
+    font-size: smaller;
+}
+
+input#LinkInput {
+    width: 30em;
+}
+
+textarea#TextInput {
+    width: 35em;
+    height: 4em;
+}
+
+div.InputSpacer {
+    margin: 1em 0 1em;
+}
+
+ul.Sitemap {
+    margin: 2em;
+    padding-left: 7em;
+    text-align: left;
+    list-style-type: none;
+}
+
+table#FileInfoTable {
+    width: 30em;
+    text-align: left;
+    margin: 0 auto;
+}
+
+table#FileInfoTable tr td input {
+    width: 100%;
+}
+
+table#FileInfoTable tr td#FileInfoHeader {
+    text-align: center;
+    padding: 1em;
+}
+
+img.MimetypeIcon {
+    vertical-align: middle;
+}
+
+ul.Sitemap li {
+    margin: 1em 0em;
+}
+
+ul.Sitemap ul {
+    list-style-type: square;
+}
+
+.ErrorNotice, .ErrorWarning, .ErrorFatal {
+    text-align: left;
+    font-size: small;
+    border: thin solid #333333;
+    border-width: thin;
+    border-color: #333333;
+    border-style: solid solid none;
+    padding: 0.5em 0.5em 0.5em 38px;
+}
+
+.ErrorNotice {
+    background-color: #D9D9CF;
+    background-image: url(../images/notice.png);
+    background-repeat: no-repeat;
+    background-position: 7px center;
+}
+
+.ErrorWarning {
+    background-color: #EBC026;
+    background-image: url(../images/warning.png);
+    background-repeat: no-repeat;
+    background-position: 7px center;
+}
+
+.ErrorFatal {
+    background-color: #BD4730;
+    background-image: url(../images/error.png);
+    background-repeat: no-repeat;
+    background-position: 7px center;
+}
+
+.ErrorDebug {
+    font-size: x-small;
+}

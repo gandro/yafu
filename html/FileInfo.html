@@ -1,0 +1,29 @@
+<table id="FileInfoTable">
+    <tr>
+        <td colspan="2" id="FileInfoHeader">
+            <img alt="<!--[$Mimetype]-->" title="<!--[$Mimetype]-->" src="<!--[$MimetypeIcon]-->" class="MimetypeIcon" />
+            <strong><!--[$Filename]--> (<!--[$Filesize]-->)</strong>
+        </td>
+    </tr><tr>
+        <td>Direktlink: </td>
+        <td>
+            <input name="url" type="text" size="42" onfocus="this.select()" 
+                value="<!--[$httpRoot]-->?f=<!--[$FileID]-->" readonly="readonly" />
+        </td>
+    </tr><tr>
+        <td>BB-Link: </td>
+        <td>
+            <input name="url" type="text" size="42" onfocus="this.select()" 
+                value="[URL=<!--[$httpRoot]-->?f=<!--[$FileID]-->]<!--[$Filename]--> (<!--[$Filesize]-->)[/URL]" readonly="readonly" />
+        </td>
+    </tr>
+<!--[if strtok($Mimetype, '/') == 'image']-->
+    <tr>
+        <td>BB-Bild: </td>
+        <td>
+            <input name="url" type="text" size="42" onfocus="this.select()" 
+                value="[IMG]<!--[$httpRoot]-->?f=<!--[$FileID]-->[/IMG]" readonly="readonly" />
+        </td>
+    </tr>
+<!--[/if]-->
+</table>
