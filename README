@@ -7,4 +7,4 @@ ausgereiften Funktionen. Wenn was kaputt geht seid ihr selber schuld,
 ich hab euch gewarnt.
 
 Wer Patches einsenden möchte, macht dies am einfachsten per E-Mail direkt an
-mich. Die Patches am liebsten direkt von `git format-paches` generiert.
+mich. Die Patches am liebsten direkt von `git format-patch` generiert.
