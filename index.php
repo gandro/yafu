@@ -14,6 +14,8 @@ switch(strtolower($Command)) {
             case 'uploadLink':
                 $mainTemplate->Content = new Template("Upload.html");
                 $mainTemplate->Content->Source = new Template($Parameter.".html");
+                $mainTemplate->Content->Source->MaxFilesize = 
+                    HumanReadable::getFilesize($CONFIG->Core['MaxFilesize'], true);
                 break;
             case 'search':
                 $mainTemplate->Content = new Template("Search.html");
@@ -54,11 +56,17 @@ switch(strtolower($Command)) {
 
         $mainTemplate->Content->FileID = $uploadedFile->FileID;
 
-        $mainTemplate->Content->Filename = str_html(HumanReadable::cutString($uploadedFile->Filename, 42));
-        $mainTemplate->Content->Filesize = HumanReadable::getFilesize($uploadedFile->Size);
+        $mainTemplate->Content->Filename = 
+            str_html(HumanReadable::cutString($uploadedFile->Filename, 42));
 
-        $mainTemplate->Content->Mimetype = $uploadedFile->Mimetype;
-        $mainTemplate->Content->MimetypeIcon = HumanReadable::getMimeTypeIcon($uploadedFile->Mimetype);
+        $mainTemplate->Content->Filesize =
+            HumanReadable::getFilesize($uploadedFile->Size);
+
+        $mainTemplate->Content->Mimetype = 
+            $uploadedFile->Mimetype;
+
+        $mainTemplate->Content->MimetypeIcon = 
+            HumanReadable::getMimeTypeIcon($uploadedFile->Mimetype);
 
         $mainTemplate->display();
         break;
