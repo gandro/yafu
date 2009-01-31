@@ -31,8 +31,20 @@ if(!(isset($_GET['f']) && File::exists($_GET['f']))) {
 }
 
 /* set needed parameters */
+$Command = 'a';
+$Parameter = 'uploadFile';
 
-$_GET = (empty($_GET)) ? array('a' => 'uploadFile') : $_GET;
+foreach($_GET as $Command => $Parameter) {
+    switch($Command) {
+        case 'a':
+        case 'f':
+        case 'u':
+            break 2;
+        default:
+            $Command = null;
+            $Parameter = null;
+    }
+}
 
 /* important global used functions */
 
