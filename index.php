@@ -9,11 +9,22 @@ switch(strtolower($Command)) {
         break;
     case 'a': /* action */
         switch($Parameter) {
-            case 'uploadFile':
-            case 'uploadText':
-            case 'uploadLink':
+            case 'upload':
                 $mainTemplate->Content = new Template("Upload.html");
-                $mainTemplate->Content->Source = new Template($Parameter.".html");
+                $source = isset($_GET['s']) ? $_GET['s'] : 'file';
+                switch($source) {
+                    case 'file':
+                    default:
+                        $Template = 'uploadFile';
+                        break;
+                    case 'text':
+                        $Template = 'uploadText';
+                        break;
+                    case 'link':
+                        $Template = 'uploadLink';
+                        break;
+                }
+                $mainTemplate->Content->Source = new Template($Template.".html");
                 $mainTemplate->Content->Source->MaxFilesize = 
                     HumanReadable::getFilesize($CONFIG->Core['MaxFilesize'], true);
                 break;

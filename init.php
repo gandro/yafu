@@ -31,8 +31,7 @@ if(!(isset($_GET['f']) && File::exists($_GET['f']))) {
 }
 
 /* set needed parameters */
-$Command = 'a';
-$Parameter = 'uploadFile';
+$_GET = empty($_GET) ? array('a' => 'upload', 's' => 'file') : $_GET;
 
 foreach($_GET as $Command => $Parameter) {
     switch($Command) {
