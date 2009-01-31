@@ -1,7 +1,6 @@
 <?php
-require_once("global.php");
-//header("Content-Type: text/plain");
-//print_r($_GET); exit();
+require_once("init.php");
+
 foreach($_GET as $cmd => $parameter) {
     switch(strtolower($cmd)) {
         case 'f': /* get file */
