@@ -98,9 +98,7 @@ class Template {
         $sourcecode = trim(is_array($code) ? $code[1] : $code);
 
         if($sourcecode[0] == '$') {
-            $variable = ($sourcecode[1] == '{' && $sourcecode[strlen($sourcecode)-1] == '}') ? 
-                substr($sourcecode, 2, -1): substr($sourcecode, 1);
-            $phpcode = '$this->executeTemplateVar($_TEMPLATE[\''.$variable.'\']);';
+            $phpcode = preg_replace('/\$\{?(\w*)\}?/', '\$this->executeTemplateVar(\$_TEMPLATE[\'${1}\']', $sourcecode).');';
         } elseif($sourcecode[0] == '*' && $sourcecode[strlen($sourcecode)-1] == '*') {
             $phpcode = '/*'.substr($sourcecode, 1, -1).'*/';
         } elseif($sourcecode[0] == '"' && $sourcecode[strlen($sourcecode)-1] == '"') {
