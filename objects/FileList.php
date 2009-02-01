@@ -56,6 +56,10 @@ class FileList implements Iterator {
         }
     }
 
+    public function count() {
+        return count($this->fileList);
+    }
+
     protected function refreshList() {
         global $CONFIG;
         $this->fileList = array();
