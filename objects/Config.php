@@ -34,6 +34,11 @@ class Config {
             'ImagePath' => 'images/',
     );
 
+    public $FileList = array(
+            'UseCaching' => true,
+            'IndexFile' => '.cachedFileList.php',
+    );
+
     /* End of default settings */
 
     public function Config($filepath) {

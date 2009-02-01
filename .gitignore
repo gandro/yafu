@@ -1,2 +1,3 @@
 .cache/*
 files/*
+.cachedFileList.php

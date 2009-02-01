@@ -58,6 +58,8 @@ class File {
             touch($fileRoot.'data');
         }
 
+        touch($CONFIG->Core['FilePool']);
+
         $infoArray = array(
                 "Attributes" => array(
                     "Filename" => (string) $this->Filename,
