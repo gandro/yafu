@@ -23,16 +23,19 @@ class FileList implements Iterator {
 
     public function sortBy($property) {
         switch($property) {
+            case 'Filename':
             case 'name':
                 $callbackFunction = create_function('$a,$b',
                     'return strcasecmp($a->Filename, $b->Filename);'
                 );
                 break;
+            case 'Mimetype':
             case 'type':
                 $callbackFunction = create_function('$a,$b',
                     'return strcasecmp($a->Mimetype, $b->Mimetype);'
                 );
                 break;
+            case 'Size':
             case 'size':
                 $callbackFunction = create_function('$a,$b','
                     return ($a->Size == $b->Size)?0:(($a->Size < $b->Size)?-1:1);'
@@ -42,6 +45,15 @@ class FileList implements Iterator {
                 return;
         }
         usort($this->fileList, $callbackFunction);
+    }
+
+    public function searchFor($query) {
+        /* TODO: Plugin hook */
+        foreach($this->fileList as $index => $File) {
+            if(stripos($File->Filename, $query) === false) {
+                unset($this->fileList[$index]);
+            }
+        }
     }
 
     protected function refreshList() {
