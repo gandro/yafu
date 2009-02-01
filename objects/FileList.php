@@ -22,7 +22,26 @@ class FileList implements Iterator {
     }
 
     public function sortBy($property) {
-
+        switch($property) {
+            case 'name':
+                $callbackFunction = create_function('$a,$b',
+                    'return strcasecmp($a->Filename, $b->Filename);'
+                );
+                break;
+            case 'type':
+                $callbackFunction = create_function('$a,$b',
+                    'return strcasecmp($a->Mimetype, $b->Mimetype);'
+                );
+                break;
+            case 'size':
+                $callbackFunction = create_function('$a,$b','
+                    return ($a->Size == $b->Size)?0:(($a->Size < $b->Size)?-1:1);'
+                );
+                break;
+            default:
+                return;
+        }
+        usort($this->fileList, $callbackFunction);
     }
 
     protected function refreshList() {
