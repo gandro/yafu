@@ -191,23 +191,37 @@ class Upload {
     }
 
     protected static function calculateFileID($filepath) {
-        $fileID = function_exists('hash_file') ? hash_file('crc32b', $filepath) :
-            sprintf("%x", crc32(md5_file($filepath)));
+        global $CONFIG;
 
-        if(File::exists($fileID)) {
+        /* Note: The file id has to be as short as possible to avoid bloated
+         *       urls. However, it has to be unique for each file to detect
+         *       duplicate files, so we use a shortened notation of sha1 sums.
+         *
+         *       Format: <first 24bit of sha1sum><1+ byte random data>
+         */
 
-            $oldFile = new File($fileID);
-            if($oldFile->isIdentical($filepath)) {
-                unlink($filepath);
-                trigger_error(t("This file was already uploaded."), E_USER_ERROR);
-                return null;
+        $sha1Full = sha1_file($filepath);
+        $sha1Short = substr($sha1Full,  0, 6); /* first 24bit */
+
+        /* search for files with the same sha1 prefix, which may are duplicates  */
+        $filesToCheck = glob($CONFIG->Core['FilePool'].'/'.$sha1Short.'*/data');
+        $numberOfFilesToCheck = ($filesToCheck === false) ? 0 : count($filesToCheck);
+
+        if(($numberOfFilesToCheck) > 0) {
+            foreach($filesToCheck as $checkFile) {
+                if(sha1_file($checkFile) == $sha1Full) {
+                    unlink($filepath);
+                    trigger_error(t("This file was already uploaded."), E_USER_ERROR);
+                    return null;
+                } 
             }
-            unset($oldFile);
-            
-            do {
-                $fileID = sprintf("%x", crc32(uniqid()));
-            } while (File::exists($fileID));
         }
+        
+        do {
+            $fileID = $sha1Short.sprintf('%02x', 
+                ($numberOfFilesToCheck<0xFF) ? rand(0x00, 0xFF) : ($numberOfFilesToCheck++)
+            );
+        } while(File::exists($fileID, false));
 
         return $fileID;
     }
