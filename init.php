@@ -20,18 +20,25 @@ $CONFIG = new Config(CONFIGFILE);
 /* load language file */
 t(true);
 
-/* initalize main template, execpt for a valid file request */
+/* set needed parameters */
+if(empty($_GET)) {
+    if($_SERVER['SCRIPT_NAME'] != $_SERVER['PHP_SELF']) {
+        $requestedFileID = strtok(
+            substr($_SERVER['PHP_SELF'], strlen($_SERVER['SCRIPT_NAME'])),
+            '/'
+        );
 
-if(!(isset($_GET['f']) && File::exists($_GET['f']))) {
-    $mainTemplate = new Template("Index.html");
-    $mainTemplate->httpRoot = getHttpRoot();
-    $mainTemplate->Title = strip_tags($CONFIG->Core['Title']);
-    $mainTemplate->HTMLTitle = $CONFIG->Core['Title'];
-    ErrorHandler::setOutput($mainTemplate, 'Error');
+        if(!File::exists($requestedFileID)) {
+            header("Location: ".getHttpRoot()."?f=".$requestedFileID);
+            exit();
+        } else {
+            $_GET = array('f' => $requestedFileID);
+        }
+    } else {
+        $_GET = array('a' => 'upload', 's' => 'file');
+    }
 }
 
-/* set needed parameters */
-$_GET = empty($_GET) ? array('a' => 'upload', 's' => 'file') : $_GET;
 
 foreach($_GET as $Command => $Parameter) {
     switch($Command) {
@@ -43,6 +50,16 @@ foreach($_GET as $Command => $Parameter) {
             $Command = null;
             $Parameter = null;
     }
+}
+
+/* initalize main template, execpt for a valid file request */
+
+if(!(isset($_GET['f']) && File::exists($_GET['f']))) {
+    $mainTemplate = new Template("Index.html");
+    $mainTemplate->httpRoot = getHttpRoot();
+    $mainTemplate->Title = strip_tags($CONFIG->Core['Title']);
+    $mainTemplate->HTMLTitle = $CONFIG->Core['Title'];
+    ErrorHandler::setOutput($mainTemplate, 'Error');
 }
 
 /* important global used functions */
