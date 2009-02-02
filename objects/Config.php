@@ -16,6 +16,7 @@ class Config {
             'DebugInfo' => false,
             'TempFilePrefix' => 'auto',
             'SiPrefixes' => false,
+            'ShortLinks' => false,
     );
 
     public $Language = array(

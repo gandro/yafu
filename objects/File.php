@@ -85,27 +85,39 @@ class File {
             foreach(glob($fileRoot.'*') as $fileItem) {
                 unlink($fileItem);
             }
+            touch($CONFIG->Core['FilePool']);
             return rmdir($fileRoot);
         }
         return false;
     }
 
-    public function isIdentical($file) {
-        return (md5_file($file) === md5_file($this->getDataPath()));
-    }
-
-    public static function exists($fileID) {
+    public static function exists($fileID, $validityCheck = true) {
         global $CONFIG;
 
         $fileRoot = realpath($CONFIG->Core['FilePool']).'/'.basename($fileID).'/';
         if(is_dir($fileRoot)) {
-            if(is_file($fileRoot.'info') && is_file($fileRoot.'data')) {
-                return true;
-            } else {
+            if($validityCheck && (!is_readable($fileRoot.'info') || !is_readable($fileRoot.'data'))) {
                 trigger_error(t("Corrupted file! ID: %s", $fileID), E_USER_WARNING);
+                return false;
             }
+            return true;
         }
         return false;
+    }
+
+    public function getDownloadLink() {
+        global $CONFIG;
+
+        $downloadLink = getHttpRoot();
+
+        if($CONFIG->Core['ShortLinks']) {
+            $downloadLink .= '?f='.$this->FileID;
+        } else {
+            $downloadLink .= basename($_SERVER['SCRIPT_NAME']).'/'.
+                $this->FileID.'/'.rawurlencode($this->Filename);
+        }
+
+        return $downloadLink;
     }
 
     public function __set($name, $value) {
