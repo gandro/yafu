@@ -13,32 +13,33 @@
 <!--[if isset($Error)]-->
     <!--[$Error]-->
 <!--[/if]-->
-    <div id="Header">
-        <h1><a href="<!--[$httpRoot]-->"><!--[$HTMLTitle]--></a></h1>
-        <ul>
-            <li>
-                <a href="?a=upload"><img src="images/upload.png" alt="<!--["Upload"]-->"/>
-                <!--["Upload"]--></a>
-            </li>
-            <li>
-                <a href="?a=search"><img src="images/search.png" alt="<!--["Search"]-->"/>
-                <!--["Search"]--></a>
-            </li>
-            <li>
-                <a href="?a=info"><img src="images/info.png" alt="<!--["Informations"]-->"/>
-                <!--["Informations"]--></a>
-            </li>
-        </ul>
-    </div>
-    <div id="Content"><div id="ContentBox">
-        <!--[if isset($Content)]-->
-            <!--[$Content]-->
-        <!--[else]-->
-            <!--[include Sitemap.html]-->
-        <!--[/if]-->
-    </div></div>
-
-    <div id="FooterSpacer"></div>
+<div id="Header">
+    <h1><a href="<!--[$httpRoot]-->"><!--[$HTMLTitle]--></a></h1>
+    <ul>
+        <li>
+            <a href="?a=upload"><img src="images/upload.png" alt="<!--["Upload"]-->"/>
+            <!--["Upload"]--></a>
+        </li>
+        <li>
+            <a href="?a=search"><img src="images/search.png" alt="<!--["Search"]-->"/>
+            <!--["Search"]--></a>
+        </li>
+        <li>
+            <a href="?a=info"><img src="images/info.png" alt="<!--["Informations"]-->"/>
+            <!--["Informations"]--></a>
+        </li>
+    </ul>
+</div>
+<div id="Content">
+<div id="ContentBox">
+    <!--[if isset($Content)]-->
+        <!--[$Content]-->
+    <!--[else]-->
+        <!--[include Sitemap.html]-->
+    <!--[/if]--> 
+</div>
+</div>
+<div id="FooterSpacer"></div>
 </div>
 
 <div id="Footer">
