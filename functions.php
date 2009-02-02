@@ -65,6 +65,26 @@ function is_utf8($str) {
         )*$%xs', $str); 
 }
 
+function ascii_encode($str) {
+
+    $str = is_utf8($str) ? str_replace(
+        array('À','Á','Â','Ã','Ä','Å','Æ','Ç','È','É','Ê','Ë','Ì','Í','Î','Ï',
+              'Ð','Ñ','Ò','Ó','Ô','Õ','Ö','Ø','Ù','Ú','Û','Ü','Ý','Þ','ß','à',
+              'á','â','ã','ä','å','æ','ç','è','é','ê','ë','ì','í','î','ï','ð',
+              'ñ','ò','ó','ô','õ','ö','ø','ù','ú','û','ü','ý','ý','þ','ÿ','Ŕ','ŕ'),
+
+        array('A','A','A','A','AE','A','AE','C','E','E','E','E','I','I','I','I',
+              'D','N','O','O','O','O','OE','O','U','U','U','UE','Y','P','ss','a',
+              'a','a','a','ae','a','ae','c','e','e','e','e','i','i','i','i','d',
+              'n','o','o','o','o','oe','o','u','u','u','ue','y','y','p','y','R','r'),
+    $str) : $str;
+
+    for($i=0;$i<strlen($str);$i++) {
+        $str[$i] = (ord($str[$i]) < 128) ? $str[$i] : '_';
+    }
+    return $str;
+}
+
 function write_ini_file($filename, $array, $process_sections = false, $startcomment = "") {
     $iniFile = fopen(realpath($filename), 'w');
     flock($iniFile, LOCK_EX);
