@@ -5,7 +5,7 @@
 html, body {
     margin: 0;
     height: 100%;
-    font-family: serif;
+    font-family: LiberationSerif,Georgia,serif;
 }
 
 div#Header {
@@ -141,11 +141,59 @@ div.InputSpacer {
     margin: 1em 0 1em;
 }
 
-ul.Sitemap {
-    margin: 2em;
-    padding-left: 7em;
+form#SearchForm p label {
+    font-size: smaller;
+}
+
+table#SearchTable {
     text-align: left;
-    list-style-type: none;
+    border-collapse: collapse;
+    width: 35em;
+    margin: 1em auto 0;
+}
+
+table#SearchTable * th a:link, table#SearchTable * th a:visited,
+table#SearchTable * th a:focus, table#SearchTable * th a:hover,
+table#SearchTable * th a:active
+{ 
+    text-decoration: none;
+}
+
+table#SearchTable * td a:link, table#SearchTable * td a:visited
+{ 
+    text-decoration: none;
+    color: #000000;
+}
+
+table#SearchTable * td a:focus, table#SearchTable * td a:hover,
+table#SearchTable * td a:active
+{
+    text-decoration: underline;
+    color: #000000;
+}
+
+
+table#SearchTable thead tr th {
+    font-size: smaller;   
+    padding-bottom: 1ex;
+}
+
+table#SearchTable .Mimetype {
+    width: 2em;
+    text-align: center;
+}
+
+table#SearchTable .Filename {
+    padding-left: 0.5em;
+}
+
+
+table#SearchTable .Filesize {
+    text-align: right;
+}
+
+table#SearchTable tbody tr.EvenEntry {
+    background-color: #f3f3f3;
 }
 
 table#FileInfoTable {
@@ -165,6 +213,13 @@ table#FileInfoTable tr td#FileInfoHeader {
 
 img.MimetypeIcon {
     vertical-align: middle;
+}
+
+ul.Sitemap {
+    margin: 2em;
+    padding-left: 7em;
+    text-align: left;
+    list-style-type: none;
 }
 
 ul.Sitemap li {

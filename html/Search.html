@@ -1,5 +1,37 @@
-<form action="?a=search"  method="post" id="SearchForm">
+<form action="?a=search"  method="get" id="SearchForm">
+<p>
     <label for="SearchInput"><!--["Search for:"]--></label>
-    <input size="40" id="SearchInput" name="search" type="text" />
+    <input type="hidden" name="a" value="search" />
+    <input size="46" id="SearchInput" name="q" type="text" value="<!--[$Query]-->"/>
     <input type="submit" value="<!--["Find"]-->" />
+</p>
 </form>
+<table id="SearchTable">
+<thead>
+<!--[if $FileList->count() > 0]-->
+    <tr>
+        <th class="Mimetype"><a href="?a=search&amp;s=type&amp;q=<!--[$Query]-->"><!--["Type"]--></a></th>
+        <th class="Filename"><a href="?a=search&amp;s=name&amp;q=<!--[$Query]-->"><!--["Filename"]--></a></th>
+        <th class="Filesize"><a href="?a=search&amp;s=size&amp;q=<!--[$Query]-->"><!--["Size"]--></a></th>
+    </tr>
+<!--[/if]-->
+</thead>
+<tbody>
+<!--[foreach $FileList as $File]-->
+    <tr class="<!--[eval ($EntryCounter++%2)?'OddEntry':'EvenEntry']-->">
+        <td class="Mimetype">
+            <img class="MimetypeIcon" src="<!--[eval HumanReadable::getMimeTypeIcon(${File}->Mimetype)]-->" 
+                alt="<!--[eval str_html(${File}->Mimetype)]-->" title="<!--[eval str_html(${File}->Mimetype)]-->"/>
+        </td>
+        <td class="Filename" title="<!--[eval str_html(${File}->Filename)]-->">
+            <a href="<!--[eval ${File}->getDownloadLink()]-->">
+                <!--[eval str_html(HumanReadable::cutString(${File}->Filename, 46))]--> 
+            </a>
+        </td>
+        <td class="Filesize" title="<!--[${File}->Size]--> <!--["Bytes"]-->">
+            <!--[eval HumanReadable::getFileSize(${File}->Size)]--> 
+        </td>
+    </tr>
+<!--[/foreach]-->
+</tbody>
+</table

@@ -8,13 +8,13 @@
         <td>Direktlink: </td>
         <td>
             <input name="url" type="text" size="42" onfocus="this.select()" 
-                value="<!--[$httpRoot]-->?f=<!--[$FileID]-->" readonly="readonly" />
+                value="<!--[$downloadLink]-->" readonly="readonly" />
         </td>
     </tr><tr>
         <td>BB-Link: </td>
         <td>
             <input name="url" type="text" size="42" onfocus="this.select()" 
-                value="[URL=<!--[$httpRoot]-->?f=<!--[$FileID]-->]<!--[$Filename]--> (<!--[$Filesize]-->)[/URL]" readonly="readonly" />
+                value="[URL=<!--[$downloadLink]-->]<!--[$Filename]--> (<!--[$Filesize]-->)[/URL]" readonly="readonly" />
         </td>
     </tr>
 <!--[if strtok($Mimetype, '/') == 'image']-->
@@ -22,7 +22,7 @@
         <td>BB-Bild: </td>
         <td>
             <input name="url" type="text" size="42" onfocus="this.select()" 
-                value="[IMG]<!--[$httpRoot]-->?f=<!--[$FileID]-->[/IMG]" readonly="readonly" />
+                value="[IMG]<!--[$downloadLink]-->[/IMG]" readonly="readonly" />
         </td>
     </tr>
 <!--[/if]-->
