@@ -86,7 +86,10 @@ function ascii_encode($str) {
 }
 
 function write_ini_file($filename, $array, $process_sections = false, $startcomment = "") {
-    $iniFile = fopen(realpath($filename), 'w');
+    if(!($iniFile = fopen(realpath($filename), 'w'))) {
+        return false;
+    }
+
     flock($iniFile, LOCK_EX);
     if(trim($startcomment) != "") {
         fwrite($iniFile, "; ".$startcomment."\n");
