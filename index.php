@@ -79,6 +79,7 @@ while($doMainLoop) {
                     $mainTemplate->Content->Filesize = HumanReadable::getFilesize($File->Size);
                     $mainTemplate->Content->Mimetype = $File->Mimetype;
                     $mainTemplate->Content->MimetypeIcon = HumanReadable::getMimeTypeIcon($File->Mimetype);
+                    $mainTemplate->Content->isImage = (strtok($File->Mimetype, '/') == 'image');
                     break;
                 case 'sitemap':
                     $mainTemplate->Content = new Template("Sitemap.html");
