@@ -3,15 +3,18 @@
         <td colspan="2" id="FileInfoHeader">
             <img alt="<!--[$Mimetype]-->" title="<!--[$Mimetype]-->" src="<!--[$MimetypeIcon]-->" class="MimetypeIcon" />
             <strong><!--[$Filename]--> (<!--[$Filesize]-->)</strong>
+            <div id="FileInfoHeaderLinks">
+                <a href="<!--[$downloadLink]-->"><!--["Download this file"]--></a>
+            </div>
         </td>
     </tr><tr>
-        <td>Direktlink: </td>
+        <td><!--["Direct link:"]--> </td>
         <td>
             <input name="url" type="text" size="42" onfocus="this.select()" 
                 value="<!--[$downloadLink]-->" readonly="readonly" />
         </td>
     </tr><tr>
-        <td>BB-Link: </td>
+        <td><!--["BB-Link:"]--> </td>
         <td>
             <input name="url" type="text" size="42" onfocus="this.select()" 
                 value="[URL=<!--[$downloadLink]-->]<!--[$Filename]--> (<!--[$Filesize]-->)[/URL]" readonly="readonly" />
@@ -19,7 +22,7 @@
     </tr>
 <!--[if strtok($Mimetype, '/') == 'image']-->
     <tr>
-        <td>BB-Bild: </td>
+        <td><!--["BB-Image"]--> </td>
         <td>
             <input name="url" type="text" size="42" onfocus="this.select()" 
                 value="[IMG]<!--[$downloadLink]-->[/IMG]" readonly="readonly" />

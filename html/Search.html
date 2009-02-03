@@ -6,15 +6,14 @@
     <input type="submit" value="<!--["Find"]-->" />
 </p>
 </form>
+<!--[if $FileList->count() > 0]-->
 <table id="SearchTable">
 <thead>
-<!--[if $FileList->count() > 0]-->
     <tr>
         <th class="Mimetype"><a href="?a=search&amp;s=type&amp;q=<!--[$Query]-->"><!--["Type"]--></a></th>
         <th class="Filename"><a href="?a=search&amp;s=name&amp;q=<!--[$Query]-->"><!--["Filename"]--></a></th>
         <th class="Filesize"><a href="?a=search&amp;s=size&amp;q=<!--[$Query]-->"><!--["Size"]--></a></th>
     </tr>
-<!--[/if]-->
 </thead>
 <tbody>
 <!--[foreach $FileList as $File]-->
@@ -24,7 +23,7 @@
                 alt="<!--[eval str_html(${File}->Mimetype)]-->" title="<!--[eval str_html(${File}->Mimetype)]-->"/>
         </td>
         <td class="Filename" title="<!--[eval str_html(${File}->Filename)]-->">
-            <a href="?a=info&i=<!--[${File}->FileID]-->">
+            <a href="?a=info&amp;i=<!--[${File}->FileID]-->">
                 <!--[eval str_html(HumanReadable::cutString(${File}->Filename, 46))]--> 
             </a>
         </td>
@@ -34,4 +33,5 @@
     </tr>
 <!--[/foreach]-->
 </tbody>
-</table
+</table>
+<!--[/if]-->

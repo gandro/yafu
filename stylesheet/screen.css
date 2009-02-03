@@ -112,6 +112,10 @@ div#Footer ul li {
 
 }
 
+div#Footer * a {
+    color: #777770;
+}
+
 div#Wrapper {
 	min-height: 100%;
 	height: auto !important;
@@ -209,6 +213,12 @@ table#FileInfoTable tr td input {
 table#FileInfoTable tr td#FileInfoHeader {
     text-align: center;
     padding: 1em;
+}
+
+table#FileInfoTable tr td#FileInfoHeader div#FileInfoHeaderLinks {
+    text-align: center;
+    font-size: smaller;
+    margin-top: 0.5em;
 }
 
 img.MimetypeIcon {
