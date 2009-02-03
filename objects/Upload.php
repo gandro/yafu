@@ -275,7 +275,7 @@ class Upload {
         if(extension_loaded('FileInfo') && $finfo = @finfo_open(FILEINFO_MIME, $CONFIG->Core['MagicFile'])) {
             $mimetype = finfo_file($finfo, realpath($path));
             finfo_close($finfo);
-        } elseif(is_callable('exec') && exec('file -v')) {
+        } elseif(is_callable('exec') && @exec('file -v')) {
             $mimetype = exec('file -bi '.escapeshellarg($filename));
         }
 
