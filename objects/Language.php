@@ -25,7 +25,7 @@ class Language {
         }
 
         foreach($languages as $currentLanguage) {
-            if($languageFile = $this->findLanguageFile($currentLanguage, false)) { break; }
+            if($languageFile = $this->findLanguageFile($currentLanguage)) { break; }
         }
 
         if(is_null($languageFile)) {
@@ -79,6 +79,31 @@ class Language {
         return null;
     }
 
+    public static function listLanguages() {
+        global $CONFIG;
+        $languageDir = realpath($CONFIG->Language['LanguageDir']).'/';
+        $extension = '.lang';
+        $fileList = glob($languageDir.'*'.$extension);
+        $languageList = array();
+
+        if($fileList !== false) {
+            foreach($fileList as $languageFileName) {
+                $fullName = "Unnamed language";
+                    $languageFile = fopen($languageFileName, 'r');
+                    while (!feof($languageFile)) {
+                        if(substr(($currentLine = fgets($languageFile)), 0, 2) == 'n:') {
+                            $fullName = substr($currentLine, 2, -1);
+                            break;
+                        }
+                    }
+                $languageFileName = basename(substr($languageFileName, 0, strlen($extension)*-1));
+                $languageList[$languageFileName] = $fullName;
+            }
+        }
+        
+        return $languageList;
+    }
+
     protected function loadLanguageFile($filepath) {
         $languageFile = fopen($filepath, 'r');
 
@@ -107,7 +132,7 @@ class Language {
                 case "\n":
                     break;
                 default:
-                    trigger_error("Syntax error in file $filepath", E_USER_WARNING);
+                    trigger_error("Syntax error in language file $filepath", E_USER_WARNING);
             }
         }
         fclose($languageFile);
