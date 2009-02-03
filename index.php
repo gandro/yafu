@@ -53,8 +53,6 @@ while($doMainLoop) {
                         $mainTemplate->Content->FileList->sortBy($sortby);
                     }
 
-
-
                     break;
                 case 'info':
                     if(isset($_GET['i']) && File::exists($_GET['i'])) {
@@ -77,6 +75,9 @@ while($doMainLoop) {
                     $mainTemplate->Content->Filesize = HumanReadable::getFilesize($File->Size);
                     $mainTemplate->Content->Mimetype = $File->Mimetype;
                     $mainTemplate->Content->MimetypeIcon = HumanReadable::getMimeTypeIcon($File->Mimetype);
+                    break;
+                case 'sitemap':
+                    $mainTemplate->Content = new Template("Sitemap.html");
                     break;
                 default:
                 case '404':
