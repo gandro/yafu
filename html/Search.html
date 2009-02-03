@@ -24,7 +24,7 @@
                 alt="<!--[eval str_html(${File}->Mimetype)]-->" title="<!--[eval str_html(${File}->Mimetype)]-->"/>
         </td>
         <td class="Filename" title="<!--[eval str_html(${File}->Filename)]-->">
-            <a href="<!--[eval ${File}->getDownloadLink()]-->">
+            <a href="?a=info&i=<!--[${File}->FileID]-->">
                 <!--[eval str_html(HumanReadable::cutString(${File}->Filename, 46))]--> 
             </a>
         </td>

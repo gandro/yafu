@@ -47,8 +47,7 @@ foreach($_GET as $Command => $Parameter) {
         case 'u':
             break 2;
         default:
-            $Command = null;
-            $Parameter = null;
+            $Command = $Parameter = null;
     }
 }
 
