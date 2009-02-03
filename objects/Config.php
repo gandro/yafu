@@ -17,6 +17,9 @@ class Config {
             'TempFilePrefix' => 'auto',
             'SiPrefixes' => false,
             'ShortLinks' => false,
+            'AllowFileUpload' => true,
+            'AllowTextUpload' => true,
+            'AllowLinkUpload' => true,
     );
 
     public $Language = array(

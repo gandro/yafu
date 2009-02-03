@@ -3,8 +3,8 @@
     <div>
         <label for="FileInput"><!--["Please select file from your hard disk (max. ${MaxFilesize}):"]--></label>
         <div class="InputSpacer">
-            <input size="42" id="FileInput" name="upload" type="file" />
+            <input type="file" name="upload" <!--[$Disabled]--> size="42" id="FileInput" />
         </div>
-        <input type="submit" value="<!--["Upload File"]-->" />
+        <input type="submit" <!--[$Disabled]--> value="<!--["Upload File"]-->" />
     </div>
 </form>
