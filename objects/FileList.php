@@ -7,13 +7,11 @@ class FileList implements Iterator {
     public function FileList() {
         global $CONFIG;
 
-        if($CONFIG->FileList['UseCaching']) {
-            if($this->isOldCache()) {
-                $this->refreshList();
-                $this->writeCachedList();
-            } else {
-                $this->loadCachedList();
-            }
+        if($CONFIG->FileList['UseCaching'] && 
+            ($this->isOldCache() || !$this->loadCachedList())
+        ) {
+            $this->refreshList();
+            $this->writeCachedList();
         } else {
             $this->refreshList();
         }
@@ -75,7 +73,8 @@ class FileList implements Iterator {
 
     protected function loadCachedList() {
         global $CONFIG;
-        $this->fileList = require($CONFIG->FileList['IndexFile']);
+        $this->fileList = include($CONFIG->FileList['IndexFile']);
+        return is_array($this->fileList);
     }
 
     protected function writeCachedList() {
@@ -96,6 +95,10 @@ class FileList implements Iterator {
     protected function isOldCache() {
         global $CONFIG;
 
+        if(!file_exists($CONFIG->Core['FilePool'].'/.lastUpdate')) {
+            self::updateCache();
+        }
+
         $timeDiff = @filemtime($CONFIG->FileList['IndexFile']) - 
             @filemtime($CONFIG->Core['FilePool'].'/.lastUpdate');
 
@@ -110,7 +113,9 @@ class FileList implements Iterator {
          *       touch() a directory under MS Windows.
         */
 
-        touch($CONFIG->Core['FilePool'].'/.lastUpdate');
+        if($CONFIG->FileList['UseCaching']) {
+            touch($CONFIG->Core['FilePool'].'/.lastUpdate');
+        }
     }
 
     /* stupid wrappers for Iterator interface */
