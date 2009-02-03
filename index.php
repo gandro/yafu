@@ -81,6 +81,9 @@ while($doMainLoop) {
                     $mainTemplate->Content->MimetypeIcon = HumanReadable::getMimeTypeIcon($File->Mimetype);
                     $mainTemplate->Content->isImage = (strtok($File->Mimetype, '/') == 'image');
                     break;
+                case 'about':
+                    $mainTemplate->Content = new Template("About.html");
+                    break;
                 case 'sitemap':
                     $mainTemplate->Content = new Template("Sitemap.html");
                     break;
