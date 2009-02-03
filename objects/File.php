@@ -58,7 +58,7 @@ class File {
             touch($fileRoot.'data');
         }
 
-        touch($CONFIG->Core['FilePool']);
+        FileList::updateCache();
 
         $infoArray = array(
                 "Attributes" => array(
@@ -85,7 +85,7 @@ class File {
             foreach(glob($fileRoot.'*') as $fileItem) {
                 unlink($fileItem);
             }
-            touch($CONFIG->Core['FilePool']);
+            FileList::updateCache();
             return rmdir($fileRoot);
         }
         return false;

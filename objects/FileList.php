@@ -8,9 +8,7 @@ class FileList implements Iterator {
         global $CONFIG;
 
         if($CONFIG->FileList['UseCaching']) {
-            if(@filemtime($CONFIG->FileList['IndexFile']) < 
-                filemtime($CONFIG->Core['FilePool'])) 
-            {
+            if($this->isOldCache()) {
                 $this->refreshList();
                 $this->writeCachedList();
             } else {
@@ -93,6 +91,26 @@ class FileList implements Iterator {
         fwrite($indexHandler, "\nEND\n); ?>");
         flock($indexHandler,LOCK_UN);
         fclose($indexHandler);
+    }
+
+    protected function isOldCache() {
+        global $CONFIG;
+
+        $timeDiff = @filemtime($CONFIG->FileList['IndexFile']) - 
+            @filemtime($CONFIG->Core['FilePool'].'/.lastUpdate');
+
+        return ((!is_readable($CONFIG->FileList['IndexFile'])) || 
+               ($timeDiff <= 0) || ($timeDiff > 3600));
+    }
+
+    public static function updateCache() {
+        global $CONFIG;
+
+        /* Note: As you may now, php is dumb: php prior version 5.3 can't 
+         *       touch() a directory under MS Windows.
+        */
+
+        touch($CONFIG->Core['FilePool'].'/.lastUpdate');
     }
 
     /* stupid wrappers for Iterator interface */
