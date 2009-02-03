@@ -38,7 +38,7 @@ class File {
 
             $newFile->Filename = basename($filename);
             $newFile->Size = intval($size);
-            $newFile->Mimetype = (string) $mimetype;
+            $newFile->Mimetype = (string) strip_tags($mimetype);
 
             $newFile->AdditionalProperties = $additional;
 
