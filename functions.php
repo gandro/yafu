@@ -1,10 +1,14 @@
 <?php
 
 function getHttpRoot() {
-        $httpRoot = empty($_SERVER['HTTPS']) ? "http://" : "https://";
-        $httpRoot .= $_SERVER['SERVER_NAME'];
-        $httpRoot .= ($_SERVER['SERVER_PORT'] != 80 && $_SERVER['SERVER_PORT'] != 443) ?  ':'.$_SERVER['SERVER_PORT'] : '';
-        $httpRoot .= ((dirname($_SERVER['PHP_SELF']) != '/') ? dirname($_SERVER['PHP_SELF']) : '').'/';
+        static $httpRoot;
+
+        if(!isset($httpRoot)) {
+            $httpRoot = empty($_SERVER['HTTPS']) ? "http://" : "https://";
+            $httpRoot .= $_SERVER['SERVER_NAME'];
+            $httpRoot .= ($_SERVER['SERVER_PORT'] != 80 && $_SERVER['SERVER_PORT'] != 443) ?  ':'.$_SERVER['SERVER_PORT'] : '';
+            $httpRoot .= ((dirname($_SERVER['SCRIPT_NAME']) != '/') ? dirname($_SERVER['SCRIPT_NAME']) : '').'/';
+        }
 
         return $httpRoot;
 }

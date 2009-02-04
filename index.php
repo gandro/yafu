@@ -75,6 +75,7 @@ while($doMainLoop) {
                     $mainTemplate->Content = new Template("FileInfo.html");
 
                     $mainTemplate->Content->downloadLink = $File->getDownloadLink();
+                    $mainTemplate->Content->FullFilename = str_html($File->Filename);
                     $mainTemplate->Content->Filename = str_html(HumanReadable::cutString($File->Filename, 42));
                     $mainTemplate->Content->Filesize = HumanReadable::getFilesize($File->Size);
                     $mainTemplate->Content->Mimetype = $File->Mimetype;

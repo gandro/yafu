@@ -28,12 +28,12 @@ if(empty($_GET)) {
             '/'
         );
 
-        if(!File::exists($requestedFileID)) {
+        /*if(!File::exists($requestedFileID)) {
             header("Location: ".getHttpRoot()."?f=".$requestedFileID);
             exit();
-        } else {
+        } else {*/
             $_GET = array('f' => $requestedFileID);
-        }
+        //}
     } else {
         $_GET = array('a' => 'upload', 's' => 'file');
     }
