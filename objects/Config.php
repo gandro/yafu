@@ -45,8 +45,9 @@ class Config {
     /* End of default settings */
 
     public function Config($filepath) {
+        $this->ConfigFilePath($filepath);
         if(file_exists($filepath)) {
-            $tmpArray = parse_ini_file($this->ConfigFilePath($filepath), true);
+            $tmpArray = parse_ini_file($filepath, true);
             if(!$tmpArray) {
                 trigger_error("Cannot parse configuration file!", E_USER_ERROR);
             }
@@ -57,19 +58,14 @@ class Config {
                     $this->$variable = $value;
                 }
             }
-        } else {
-            $this->ConfigFilePath($filepath);
         }
     }
 
     protected function ConfigFilePath($path = null) {
         static $configFile = null;
 
-        if(isset($path) && is_string($path)) {
-            if(!file_exists($path)) {
-                touch($path);
-            }
-            $configFile = realpath($path);
+        if(isset($path) && (($configFile = realpath($path)) == false)) {
+            $configFile = getcwd().'/'.$path;
         }
         return $configFile;
     }
@@ -92,6 +88,7 @@ class Config {
                 }
             }
             $allItems = array_merge($unassignedItems, $assignedItems);
+            touch($this->ConfigFilePath());
             write_ini_file(
                 $this->ConfigFilePath(),
                 $allItems,

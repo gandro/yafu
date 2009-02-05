@@ -334,7 +334,7 @@ switch (isset($_POST['p']) ? $_POST['p'] : 'introduction'):
     </ul>
     <h2>Congratulaions!</h2>
     <p>
-        The installation of Yet Another File Upload 2.0 is complete. 
+        The installation of <em>Yet Another File Upload 2.0</em> is complete. 
         Please note any errors above, as they may disable certain essential features.
     </p>
     <hr />
