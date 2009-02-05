@@ -21,6 +21,10 @@ class Template {
         if($CONFIG->Template['UseCaching']) {
             $fileId = basename($this->Filename).'_'.sprintf('%x', crc32($this->Filename));
 
+            if(!file_exists($CONFIG->Template['CacheDir'])) {
+                mkdir($CONFIG->Template['CacheDir']);
+            }
+
             $this->cachedFile = realpath($CONFIG->Template['CacheDir']).
                 '/'.$fileId.'_'.filemtime($this->Filename);
 
