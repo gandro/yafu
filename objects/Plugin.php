@@ -9,7 +9,7 @@ abstract class Plugin {
     public static $PluginAuthor = "nobody";
     public static $PluginVersion = 0;
 
-    public static function releaseHook($hookName, $parameters) {
+    final public static function triggerHook($hookName, $parameters) {
         global $_HOOKS;
 
         if(isset($_HOOKS[$hookName]) && is_array($_HOOKS[$hookName])) {
@@ -19,11 +19,11 @@ abstract class Plugin {
         }
     }
 
-    public static function loadPlugins() {
+    final public static function loadPlugins() {
         //TODO!!!!
     }
 
-    protected function registerHook($hookName, array $callbackFunction, $priority = 0) {
+    final protected function registerHook($hookName, array $callbackFunction, $priority = 0) {
         global $_HOOKS;
 
         if($priority < -100 || $priority > 100) {
@@ -42,7 +42,7 @@ abstract class Plugin {
         return true;
     }
 
-    protected function unregisterHook($hookName, $callbackFunction) {
+    final protected function unregisterHook($hookName, $callbackFunction) {
         global $_HOOKS;
 
         $fullCallback = array($this, $callbackFunction);
