@@ -150,7 +150,7 @@ switch (isset($_POST['p']) ? $_POST['p'] : 'introduction'):
 ?>
     <h2>Introduction</h2>
     <p>
-        Welcome the installation of <em>Yet Another File Upload 2.0.</em>
+        Welcome to the installation of <em>Yet Another File Upload 2.0.</em>
         This script will help you to configure your <abbr title="Yet Another File Upload 2.0">yafu2</abbr> installation. <br />
     </p>
     <p class="Notice">
