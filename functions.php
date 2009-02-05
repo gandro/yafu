@@ -27,6 +27,34 @@ function str_html($string) {
     return htmlspecialchars($string, ENT_QUOTES, 'UTF-8', false);
 }
 
+function str_extract($line) {
+    $subString = null;
+    $fullString = '';
+
+    for($i=0; $i<strlen($line); $i++) {
+        if(is_null($subString) && $line[$i] == '"') {
+            $subString = '';
+        } elseif(!is_null($subString)) {
+            switch($line[$i]) {
+                case '"':
+                    $fullString .= $subString;
+                    $subString = null;
+                    break;
+                case '\\':
+                    if($line[$i+1] == '"') {
+                        $subString .= $line[++$i];
+                    } else {
+                         $subString .= '\\';
+                    }
+                    break;
+                default:
+                    $subString .= $line[$i];
+            }
+        }
+    }
+    return is_null($subString) ? $fullString : false;
+}
+
 function createTempFile($create = true) {
     global $CONFIG;
 

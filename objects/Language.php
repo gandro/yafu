@@ -92,7 +92,7 @@ class Language {
                     $languageFile = fopen($languageFileName, 'r');
                     while (!feof($languageFile)) {
                         if(substr(($currentLine = fgets($languageFile)), 0, 2) == 'n:') {
-                            $fullName = substr($currentLine, 2, -1);
+                            $fullName = str_extract($currentLine);
                             break;
                         }
                     }
@@ -104,36 +104,43 @@ class Language {
         return $languageList;
     }
 
-    protected function loadLanguageFile($filepath) {
+    protected function loadLanguageFile($filepath, $onlyFullname = false) {
         $languageFile = fopen($filepath, 'r');
 
         $currentString = null;
+        $lineCounter = 0;
         while (!feof($languageFile)) {
-            $currentLine = str_replace("\r", "", fgets($languageFile));
-            if(empty($currentLine)) { continue; }
+            $currentLine = trim(fgets($languageFile));
+            $lineCounter++;
+
+            if(empty($currentLine)) { 
+                continue;
+            }
+
             switch($currentLine[0]) {
                 case 's':
-                    if($currentLine[1] == ':') {
-                        $currentString = trim(substr($currentLine, 2, -1));
-                        $this->lookupTable[$currentString] = null;
+                    if($currentLine[1] == ':' && ($tmpString = str_extract(substr($currentLine, 2)))) {
+                        $currentString = $tmpString;
+                        continue 2;
                     }
                     break;
                 case 't':
-                    if($currentLine[1] == ':') {
-                        $this->lookupTable[$currentString] = trim(substr($currentLine, 2, -1));
+                    if($currentLine[1] == ':' && isset($currentString) && ($tmpString = str_extract(substr($currentLine, 2)))) {
+                        $this->lookupTable[$currentString] = $tmpString;
+                        $currentString = null;
+                        continue 2;
                     }
                     break;
                 case 'n':
-                    if($currentLine[1] == ':') {
-                        $this->currentLanguage = substr($currentLine, 2, -1);
+                    if($currentLine[1] == ':' && ($tmpString = str_extract(substr($currentLine, 2)))) {
+                        $this->currentLanguage = $tmpString;
+                        continue 2;
                     }
                     break;
                 case '#':
-                case "\n":
-                    break;
-                default:
-                    trigger_error("Syntax error in language file $filepath", E_USER_WARNING);
+                    continue 2;
             }
+            trigger_error("Syntax error in language file $filepath on line $lineCounter", E_USER_WARNING);
         }
         fclose($languageFile);
     }
