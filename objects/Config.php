@@ -25,7 +25,6 @@ class Config {
     public $Language = array(
             'AutoDetect' => true,
             'Default' => 'en',
-            'ForceDefault' => false,
             'LanguageDir' => 'i18n/',
     );
 
@@ -49,7 +48,7 @@ class Config {
         if(file_exists($filepath)) {
             $tmpArray = parse_ini_file($this->ConfigFilePath($filepath), true);
             if(!$tmpArray) {
-                die("Error parsing configuration file!");
+                trigger_error("Cannot parse configuration file!", E_USER_ERROR);
             }
             foreach($tmpArray as $variable => $value) {
                 if(is_array($value) && isset($this->$variable)) {
@@ -59,21 +58,19 @@ class Config {
                 }
             }
         } else {
-            if(touch($filepath)) {
-                $this->ConfigFilePath($filepath);
-                $this->saveChanges(true);
-                $this->writeChanges();
-            } else {
-                die("Failed to create default configuration file!");
-            }
+            $this->ConfigFilePath($filepath);
         }
-
     }
 
     protected function ConfigFilePath($path = null) {
         static $configFile = null;
 
-        $configFile = is_string($path) ? realpath($path) : $configFile;
+        if(isset($path) && is_string($path)) {
+            if(!file_exists($path)) {
+                touch($path);
+            }
+            $configFile = realpath($path);
+        }
         return $configFile;
     }
 
@@ -95,7 +92,6 @@ class Config {
                 }
             }
             $allItems = array_merge($unassignedItems, $assignedItems);
-
             write_ini_file(
                 $this->ConfigFilePath(),
                 $allItems,

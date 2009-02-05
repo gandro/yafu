@@ -9,7 +9,7 @@ class Language {
         global $CONFIG;
         $languages = array();
 
-        if(is_null($language) && isset($_SERVER['HTTP_ACCEPT_LANGUAGE']) && $CONFIG->Language['AutoDetect']) {
+        if(isset($_SERVER['HTTP_ACCEPT_LANGUAGE']) && $CONFIG->Language['AutoDetect']) {
             /* CC-BY 3.0 Xavier Lepaul <xavier AT lepaul DOT fr> 2007 */
             foreach(explode(',',$_SERVER['HTTP_ACCEPT_LANGUAGE']) as $language) {
                 preg_match('/([A-Za-z]{1,8}[\-[A-Za-z]{1,8}]*)(;q=([0-9\.]+))?/', $language, $matches);

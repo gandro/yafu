@@ -7,6 +7,12 @@ define("CONFIGFILE", "yafu2.conf");
 /* don't like it */
 set_magic_quotes_runtime(0);
 
+/* start initial setup */
+if(!file_exists(CONFIGFILE) && file_exists("setup.php")) {
+    include("setup.php");
+    exit();
+}
+
 /* init error handling */
 set_error_handler(array('ErrorHandler', 'newError'));
 register_shutdown_function(array('ErrorHandler', 'flushErrorBuffer'));
@@ -69,19 +75,10 @@ function __autoload($classname) {
     }
 }
 
-function __errorhandler($errno, $errstr, $errfile, $errline) {
-    echo($errstr."\n");
-}
-
 function t($resetLanguage = false) {
     static $currentLanguage = null;
     if(is_null($currentLanguage) || $resetLanguage) {
-        global $CONFIG;
-        if($CONFIG->Language['ForceDefault']) {
-            $currentLanguage = new Language($CONFIG->Language['Default']);
-        } else {
-            $currentLanguage = new Language();
-        }
+        $currentLanguage = new Language();
     }
     $argv = func_get_args();
     $argv[0] = $currentLanguage->translate($argv[0]);
