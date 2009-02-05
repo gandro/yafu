@@ -338,16 +338,10 @@ switch (isset($_POST['p']) ? $_POST['p'] : 'introduction'):
         Please note any errors above, as they may disable certain essential features.
     </p>
     <hr />
-    <form action="<?php echo($_SERVER['PHP_SELF']) ?>"  method="post">
-        <div>
-            <input type="hidden" name="p" value="settings" />
-            <input type="submit" value="Previous" class="Previous" />
-        </div>
-    </form>
     <form action="<?php echo(getHttpRoot()) ?>"  method="post">
         <div>
             <input type="hidden" name="a" value="fileUpload" />
-            <input type="submit" value="Quit" class="Next" />
+            <input type="submit" value="Quit Setup" class="Next" />
         </div>
     </form>
 <?php 
