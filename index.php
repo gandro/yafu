@@ -114,6 +114,7 @@ while($doMainLoop) {
                     } elseif(isset($_POST['text'])) {
                         $uploadedFile = Upload::uploadFromText($_POST['text']);
                     }
+                    break;
                 case 'link':
                     if(!$CONFIG->Core['AllowLinkUpload']) {
                         trigger_error(t("Upload from this source is disabled!"), E_USER_ERROR);
