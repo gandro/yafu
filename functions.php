@@ -85,6 +85,7 @@ function removeLeftOverFiles() {
 }
 
 function is_utf8($str) {
+        /* from http://www.php.net/manual/en/function.mb-detect-encoding.php#50087 */
         return preg_match('%^(?:
               [\x09\x0A\x0D\x20-\x7E]            # ASCII
             | [\xC2-\xDF][\x80-\xBF]             # non-overlong 2-byte
