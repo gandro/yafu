@@ -102,8 +102,9 @@ class Upload {
                             }
                             break;
                         case 'content-disposition':
-                            parse_str($parameter, $parameterArray);
-                            $filename = $parameterArray['filename'];
+                            if(preg_match('/.*filename="(?<filename>.*)".*/i', $parameter, $parameterArray)) {;
+                                $filename = $parameterArray['filename'];
+                            }
                             unset($parameterArray);
                             break;
                         case 'x-wormhole':
@@ -170,7 +171,11 @@ class Upload {
         fclose($tmpHandler);
 
         $fileID = self::calculateFileID($tmpFile);
-        $filename = isset($filename) ? str_eval($filename) : basename(parse_url($uploadedLink, PHP_URL_PATH));
+
+        $filename = !isset($filename) ? basename(parse_url($uploadedLink, PHP_URL_PATH)) : $filename;
+        $filename = empty($filename) ? parse_url($uploadedLink, PHP_URL_HOST) : $filename;
+        $filename = str_eval($filename);
+
         $size = filesize($tmpFile);
         $mimetype = self::detectMimeType($tmpFile, isset($mimetype) ? $mimetype : 'application/octet-stream');
 
