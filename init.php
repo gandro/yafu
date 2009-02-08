@@ -24,7 +24,7 @@ require_once("functions.php");
 $CONFIG = new Config(CONFIGFILE);
 
 /* load language file */
-t(true);
+$LANGUAGE = new Language();
 
 /* set needed parameters */
 if(empty($_GET)) {
@@ -34,12 +34,7 @@ if(empty($_GET)) {
             '/'
         );
 
-        /*if(!File::exists($requestedFileID)) {
-            header("Location: ".getHttpRoot()."?f=".$requestedFileID);
-            exit();
-        } else {*/
-            $_GET = array('f' => $requestedFileID);
-        //}
+        $_GET = array('f' => $requestedFileID);
     } else {
         $_GET = array('a' => 'upload', 's' => 'file');
     }
@@ -76,12 +71,12 @@ function __autoload($classname) {
 }
 
 function t($resetLanguage = false) {
-    static $currentLanguage = null;
-    if(is_null($currentLanguage) || $resetLanguage) {
-        $currentLanguage = new Language();
-    }
+    global $LANGUAGE;
     $argv = func_get_args();
-    $argv[0] = $currentLanguage->translate($argv[0]);
+
+    if(isset($LANGUAGE)) {
+        $argv[0] = $LANGUAGE->translate($argv[0]);
+    }
     return call_user_func_array('sprintf', $argv);
 }
 
