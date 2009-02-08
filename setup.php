@@ -113,7 +113,7 @@ hr {
 <body>
 <h1><small>Welcome to</small> Yet Another File Upload 2.0</h1>
 <?php
-ini_set("display_errors", TRUE);
+@ini_set("display_errors", TRUE);
 error_reporting(E_ALL);
 
 defined('CLASSPATH') || define("CLASSPATH", "objects/");
@@ -288,23 +288,23 @@ switch (isset($_POST['p']) ? $_POST['p'] : 'introduction'):
             ?> 
         </li>
         <li>
-            Checking php.ini upload_max_filesize...
-            <?php 
-                if(return_bytes(ini_get('upload_max_filesize')) > $CONFIG->Core['MaxFilesize']) {
-                    success();
-                } else {
-                    $CONFIG->Core['MaxFilesize'] = return_bytes(ini_get('upload_max_filesize'));
-                    failed("Failed! Reducing max filesize limit!");
-                }
-            ?> 
-        </li>
-        <li>
             Checking php.ini post_max_size...
             <?php 
                 if(return_bytes(ini_get('post_max_size')) > $CONFIG->Core['MaxFilesize']) {
                     success();
                 } else {
                     $CONFIG->Core['MaxFilesize'] = return_bytes(ini_get('post_max_size'));
+                    failed("Failed! Reducing max filesize limit!");
+                }
+            ?> 
+        </li>
+        <li>
+            Checking php.ini upload_max_filesize...
+            <?php 
+                if(return_bytes(ini_get('upload_max_filesize')) > $CONFIG->Core['MaxFilesize']) {
+                    success();
+                } else {
+                    $CONFIG->Core['MaxFilesize'] = return_bytes(ini_get('upload_max_filesize'));
                     failed("Failed! Reducing max filesize limit!");
                 }
             ?> 
