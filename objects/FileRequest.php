@@ -6,7 +6,7 @@ class FileRequest {
     public function FileRequest($fileID) {
         if(!File::exists($fileID)) {
             header("HTTP/1.1 404 Not Found");
-            trigger_error(t("Requested file not found!"), E_USER_ERROR);
+            trigger_error("Requested file not found!", E_USER_ERROR);
         }
 
         $this->requestedFile = new File($fileID);
@@ -32,8 +32,6 @@ class FileRequest {
              *       filename parameter has to be US-ASCII.
              *       Even worse, every browser parses non-US-ASCII characters 
              *       differently. 
-             *
-             *          See: http://greenbytes.de/tech/tc2231/
              */
 
             $encodedFilename = ascii_encode($this->requestedFile->Filename);
@@ -71,7 +69,7 @@ class FileRequest {
         $startRange = strtok($range, '-/');
         if(empty($startRange)) {
             header("HTTP/1.1 416 Requested Range not satisfiable");
-            trigger_error(t("Requested Range not satisfiable!"), E_USER_ERROR);
+            trigger_error("Requested Range not satisfiable!", E_USER_ERROR);
         }
         if(!ctype_digit($endRange = strtok('-/'))) {
             $endRange = $this->requestedFile->Size - 1;
