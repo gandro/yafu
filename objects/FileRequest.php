@@ -28,7 +28,7 @@ class FileRequest {
         if($_SERVER['SCRIPT_NAME'] == $_SERVER['PHP_SELF']) {
 
             /* Note: Well, the people who wrote RFC2183 (Content-Disposition) and/or 
-             *       RFC2045 (MIME) are dumb and sadistic, since the encoding for the
+             *       RFC2045 (MIME) are mad and insane, since the encoding for the
              *       filename parameter has to be US-ASCII.
              *       Even worse, every browser parses non-US-ASCII characters 
              *       differently. 

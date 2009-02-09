@@ -25,12 +25,15 @@ class Config {
     public $Language = array(
             'AutoDetect' => true,
             'Default' => 'en',
-            'LanguageDir' => 'i18n/',
+            'CoreDir' => 'locale/',
+            'Extension' => '.yfl',
+            'UseCaching' => true,
+            'CacheDir' => '.cache/language/',
     );
 
     public $Template = array(
             'TemplateDir' => 'html/',
-            'CacheDir' => '.cache/',
+            'CacheDir' => '.cache/template/',
             'OpenTag' => '<!--[',
             'CloseTag' => ']-->',
             'UseCaching' => true,
@@ -39,7 +42,7 @@ class Config {
 
     public $FileList = array(
             'UseCaching' => true,
-            'IndexFile' => '.cachedFileList.php',
+            'IndexFile' => '.cache/cachedFileList.php',
     );
 
     /* End of default settings */

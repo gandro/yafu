@@ -14,28 +14,21 @@ class Template {
         global $CONFIG;
 
         if(!($this->Filename = realpath($CONFIG->Template['TemplateDir'].'/'.$filename))
-                                                && !($this->Filename = realpath($filename))) {
-            trigger_error(t("Template file \"%s\" not found", $filename), E_USER_ERROR); 
+            && !($this->Filename = realpath($filename))
+        ) {
+            trigger_error(t("Template file \"%s\" not found", $filename), E_USER_ERROR);
         }
 
         if($CONFIG->Template['UseCaching']) {
-            $fileId = basename($this->Filename).'_'.sprintf('%x', crc32($this->Filename));
+            $this->cachedFile = realpath($CONFIG->Template['CacheDir']).'/'.
+                sprintf('%x', crc32($this->Filename)).'_'.basename($this->Filename);
 
-            if(!file_exists($CONFIG->Template['CacheDir'])) {
-                mkdir($CONFIG->Template['CacheDir']);
-            }
-
-            $this->cachedFile = realpath($CONFIG->Template['CacheDir']).
-                '/'.$fileId.'_'.filemtime($this->Filename);
-
-            if(!file_exists($this->cachedFile)) {
+            if(!file_exists($this->cachedFile) || 
+                    filemtime($this->Filename) > filemtime($this->cachedFile)
+            ) {
                 $this->compile();
-                file_put_contents($this->cachedFile, $this->compiledCode);
-            }
-
-            foreach(glob(realpath($CONFIG->Template['CacheDir']).'/'.$fileId.'_*') as $oldFile) {
-                if($oldFile != $this->cachedFile) {
-                    unlink($oldFile);
+                if(!file_put_contents($this->cachedFile, $this->compiledCode, LOCK_EX)) {
+                    trigger_error(t("Cannot cache compiled template!"), E_USER_ERROR);
                 }
             }
         } else {
