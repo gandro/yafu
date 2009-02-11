@@ -26,9 +26,9 @@ class Config {
             'AutoDetect' => true,
             'Default' => 'en',
             'CoreDir' => 'locale/',
-            'Extension' => '.yfl',
+            'Extension' => '.po',
             'UseCaching' => true,
-            'CacheDir' => '.cache/language/',
+            'CacheDir' => '.cache/locale/',
     );
 
     public $Template = array(
@@ -43,6 +43,11 @@ class Config {
     public $FileList = array(
             'UseCaching' => true,
             'IndexFile' => '.cache/cachedFileList.php',
+    );
+
+    public $Plugin = array(
+            'PluginDir' => 'plugins/',
+            'ActivePlugins' => ' ',
     );
 
     /* End of default settings */
@@ -80,7 +85,7 @@ class Config {
         return (boolean) $hasChanged;
     }
 
-    protected function writeChanges() {
+    public function writeChanges() {
         if($this->saveChanges()) {
             $unassignedItems = $assignedItems = array();
             foreach($this as $variable => $value) {

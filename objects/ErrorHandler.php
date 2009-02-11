@@ -5,7 +5,7 @@ class ErrorHandler {
     private static $outputVariable;
 
     private static $outputBuffer = '';
-    private static $lastErrorMessage = '';
+    private static $lastErrorMessage = null;
 
     public static function newError($errno, $errstr, $errfile, $errline) {
         global $CONFIG;

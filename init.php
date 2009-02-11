@@ -1,4 +1,6 @@
 <?php
+/* ready, steady... go! */
+$startTime = microtime(true);
 
 /* important paths */ 
 define("CLASSPATH", "objects/");
@@ -24,7 +26,13 @@ require_once("functions.php");
 $CONFIG = new Config(CONFIGFILE);
 
 /* load language file */
+
 $LANGUAGE = new Language();
+//var_dump($LANGUAGE); exit();
+
+/* load plugins */
+$HOOKS = array();
+Plugin::loadPlugins();
 
 /* set needed parameters */
 if(empty($_GET)) {
@@ -39,7 +47,6 @@ if(empty($_GET)) {
         $_GET = array('a' => 'upload', 's' => 'file');
     }
 }
-
 
 foreach($_GET as $Command => $Parameter) {
     switch($Command) {
@@ -70,7 +77,7 @@ function __autoload($classname) {
     }
 }
 
-function t($resetLanguage = false) {
+function t() {
     global $LANGUAGE;
     $argv = func_get_args();
 

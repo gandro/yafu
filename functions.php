@@ -43,6 +43,9 @@ function str_extract($line) {
                 case '\\':
                     if($line[$i+1] == '"') {
                         $subString .= $line[++$i];
+                    } elseif($line[$i+1] == 'n') {
+                        $subString .= "\n";
+                        $i++;
                     } else {
                          $subString .= '\\';
                     }
@@ -52,10 +55,16 @@ function str_extract($line) {
             }
         }
     }
-    return is_null($subString) ? $fullString : false;
+    return $fullString;
 }
 
-function createTempFile($create = true) {
+function getScriptDuration() {
+    global $startTime;
+
+    return microtime(true)-$startTime;
+}
+
+function createTempFile() {
     global $CONFIG;
 
     if(strtolower($CONFIG->Core['TempFilePrefix']) == 'auto') {
@@ -66,22 +75,30 @@ function createTempFile($create = true) {
         $prefix = basename($CONFIG->Core['TempFilePrefix']);
     }
 
-    if($create) {
-        return tempnam($path, $prefix);
-    } else {
-        return $path.'/'.$prefix;
+    addFileForRemoval($path.'/'.$prefix.'*', ini_get("max_execution_time"));
+    return tempnam($path, $prefix);
+}
+
+function addFileForRemoval($filePattern, $maxAge = 0) {
+    static $fileList = array();
+
+    if(is_string($filePattern)) {
+            $fileList[$filePattern] = $maxAge;
     }
+
+    return $fileList;
 }
 
 function removeLeftOverFiles() {
-    $maxTimestamp = time() - ini_get("max_execution_time");
+    foreach(addFileForRemoval(null) as $filePattern => $maxAge) {
+        $maxTimestamp = time() - $maxAge;
 
-    foreach (glob(getTempFile(false).'*') as $filename) {
-        if(filemtime($filename) < $maxTimestamp) {
-            unlink($filename);
+        foreach (glob($filePattern) as $filename) {
+            if(filemtime($filename) < $maxTimestamp) {
+                unlink($filename);
+            }
         }
     }
-
 }
 
 function is_utf8($str) {

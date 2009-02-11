@@ -1,7 +1,5 @@
 <?php
 
-$_HOOKS = array();
-
 abstract class Plugin {
     abstract public function initPlugin();
 
@@ -9,22 +7,43 @@ abstract class Plugin {
     public static $PluginAuthor = "nobody";
     public static $PluginVersion = 0;
 
-    final public static function triggerHook($hookName, $parameters) {
-        global $_HOOKS;
+    public static $loadedPlugins = array();
 
-        if(isset($_HOOKS[$hookName]) && is_array($_HOOKS[$hookName])) {
-            foreach($_HOOKS[$hookName] as $callbackFunction) {
+    final public static function triggerHook($hookName, $parameters) {
+        global $HOOKS;
+
+        if(isset($HOOKS[$hookName]) && is_array($HOOKS[$hookName])) {
+            foreach($HOOKS[$hookName] as $callbackFunction) {
                 call_user_func_array($callbackFunction, $parameters);
             }
         }
     }
 
     final public static function loadPlugins() {
-        //TODO!!!!
+        global $CONFIG;
+
+        $PluginRoot = $CONFIG->Plugin['PluginDir'];
+        $activePlugins = explode(',', $CONFIG->Plugin['ActivePlugins']);
+        $activePlugins = array_map('trim', $activePlugins);
+        $activePlugins = array_filter($activePlugins);
+
+        foreach($activePlugins as $Plugin) {
+            if(
+                (is_dir($PluginRoot.'/'.$Plugin)) &&
+                (is_file($PluginRoot.'/'.$Plugin.'/'.$Plugin.'.php')) &&
+                (include($PluginRoot.'/'.$Plugin.'/'.$Plugin.'.php')) &&
+                (get_parent_class($Plugin) == 'Plugin')
+            ) {
+                self::$loadedPlugins[$Plugin] = new $Plugin();
+                self::$loadedPlugins[$Plugin]->initPlugin();
+            } else {
+                trigger_error(t("Cannot load plugin %s", $Plugin), E_USER_WARNING);
+            }
+        }
     }
 
     final protected function registerHook($hookName, array $callbackFunction, $priority = 0) {
-        global $_HOOKS;
+        global $HOOKS;
 
         if($priority < -100 || $priority > 100) {
             trigger_error(t("Plugin \"%s\": Priority of hook \"%s\" is out of range", self::$PluginName, $hookName), E_USER_WARNING);
@@ -32,22 +51,22 @@ abstract class Plugin {
         }
 
         $fullCallback = array($this, $callbackFunction);
-        if(isset($_HOOKS[$hookName]) && in_array($fullCallback, $_HOOKS[$hookName])) {
+        if(isset($HOOKS[$hookName]) && in_array($fullCallback, $HOOKS[$hookName])) {
             trigger_error(t("Plugin \"%s\": Hook \"%s\" is already registered", self::$PluginName, $hookName), E_USER_WARNING);
             return false;
         }
 
-        $_HOOKS[$hookName][$priority] = $fullCallback;
-        krsort($_HOOKS[$hookName]);
+        $HOOKS[$hookName][$priority] = $fullCallback;
+        krsort($HOOKS[$hookName]);
         return true;
     }
 
     final protected function unregisterHook($hookName, $callbackFunction) {
-        global $_HOOKS;
+        global $HOOKS;
 
         $fullCallback = array($this, $callbackFunction);
-        if(isset($_HOOKS[$hookName]) && ($key = array_search($fullCallback, $_HOOKS[$hookName]))) {
-            unset($_HOOKS[$hookName][$key]);
+        if(isset($HOOKS[$hookName]) && ($key = array_search($fullCallback, $HOOKS[$hookName]))) {
+            unset($HOOKS[$hookName][$key]);
             return true;
         }
 

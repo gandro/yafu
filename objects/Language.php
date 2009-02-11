@@ -3,146 +3,183 @@
 class Language {
 
     protected $lookupTable = array();
-    public $currentLanguage = "None";
+    public $currentLanguage = null;
 
     public function Language($language = null) {
         global $CONFIG;
-        $languages = array();
+
+        $requestedLanguages = array();
 
         if(isset($_SERVER['HTTP_ACCEPT_LANGUAGE']) && $CONFIG->Language['AutoDetect']) {
-            /* CC-BY 3.0 Xavier Lepaul <xavier AT lepaul DOT fr> 2007 */
+
+            /* Note: The following code is taken from http://vrac.adwain.org/:
+             *
+             *         Copyright © 2007 Xavier Lepaul <xavier AT lepaul DOT fr>
+             *         License: Creative Commons Attribution 3.0
+             *                  http://creativecommons.org/licenses/by/3.0/
+             */
+
             foreach(explode(',',$_SERVER['HTTP_ACCEPT_LANGUAGE']) as $language) {
                 preg_match('/([A-Za-z]{1,8}[\-[A-Za-z]{1,8}]*)(;q=([0-9\.]+))?/', $language, $matches);
                 if(count($matches) != 2 && count($matches) != 4) { continue; }
-                $languages[$matches[1]] = (count($matches)==2) ? 1 : $matches[3];
+                $requestedLanguages[$matches[1]] = (count($matches)==2) ? 1 : $matches[3];
             }
-            arsort($languages);
-            $languages = array_keys($languages);
-        } elseif(is_null($language) && isset($CONFIG->Language['Default'])) {
-            $languages[] = $CONFIG->Language['Default'];
+
+            arsort($requestedLanguages);
+            $requestedLanguages = array_keys($requestedLanguages);
         } else {
-            $languages[] = $language;
+            $requestedLanguages[] = $language;
         }
 
-        foreach($languages as $currentLanguage) {
-            if($languageFile = $this->findLanguageFile($currentLanguage)) { break; }
+        $requestedLanguages[] = $CONFIG->Language['Default'];
+        $requestedLanguages = array_map(array('self', 'getValidLanguageCode'), $requestedLanguages);
+        setlocale(LC_ALL, $requestedLanguages);
+
+        $this->currentLanguage = self::getBestLanguage($requestedLanguages);
+
+        if($this->currentLanguage) {
+            setlocale(LC_ALL, $this->currentLanguage);
         }
 
-        if(is_null($languageFile)) {
-            foreach($languages as $currentLanguage) {
-                if($languageFile = $this->findLanguageFile($currentLanguage, true)) { break; }
-            }
-        }
-
-        if(!is_null($languageFile)) {
-            $this->loadLanguageFile($languageFile);
-            setlocale(LC_ALL, $languages);
-        }
+        $this->registerContextRoot("core", $CONFIG->Language['CoreDir']);
     }
 
-    public function translate($string) {
-        $string = trim($string);
+    public function translate($string, $context = null) {
+        $searchContext = is_string($context) ? array($context) : array_keys($this->lookupTable);
 
-        if(isset($this->lookupTable[$string])) {
-            return $this->lookupTable[$string];
-        } else {
-            return $string;
+        foreach($searchContext as $context) {
+            if(isset($this->lookupTable[$context][$string])) {
+                return $this->lookupTable[$context][$string];
+            }
         }
+
+        return $string;
     }
 
-    public function findLanguageFile($language, $fuzzyHits = false) {
+    public function registerContextRoot($contextName, $contextRootDir) {
         global $CONFIG;
-        $languageDir = realpath($CONFIG->Language['LanguageDir']).'/';
-        $extension = '.lang';
 
-        $language = strtolower(str_replace('_','-',$language));
-        
+        $filePattern = $contextRootDir.'/'.$this->currentLanguage.
+                        '/*'.$CONFIG->Language['Extension'];
 
-        if(file_exists($languageDir.$language.$extension)) {
-            return $languageDir.$language.$extension;
-        }
+        foreach(glob($filePattern) as $languageFile) {
+            $contextName .= '.'.strtolower(pathinfo($languageFile, PATHINFO_FILENAME));
+            if($CONFIG->Language['UseCaching']) {
+                $cachedFile = $CONFIG->Language['CacheDir'].'/'.
+                                $this->currentLanguage.'.'.$contextName.'.php';
 
-        if(strpos($language, '-')) {
-            list($language, $region) = explode('-', $language, 2);
-            if(file_exists($languageDir.$language.$extension)) {
-                return $languageDir.$language.$extension;
+                if(file_exists($cachedFile) && 
+                    (filemtime($cachedFile) > filemtime($languageFile))
+                ) {
+                    $this->lookupTable[$contextName] = include($cachedFile);
+                    if(is_array($this->lookupTable[$contextName])) {
+                        continue;
+                    }
+                } else {
+                    $this->lookupTable[$contextName] = $this->loadLanguageFile($languageFile);
+                    if(!file_put_contents(
+                        $cachedFile, 
+                        "<?php return unserialize(<<<END\n".
+                        serialize($this->lookupTable[$contextName]).
+                        "\nEND\n); ?>",
+                        LOCK_EX
+                    )) {
+                        trigger_error("Failed to write cache file: $cachedFile", E_USER_WARNING);
+                    }
+                    continue;
+                }
             }
-        }
 
-        if($fuzzyHits) {
-            $languageList = glob($languageDir.$language.'-*'.$extension);
-            if($languageList) {
-                return $languageList[0];
-            }
+            $this->lookupTable[$contextName] = $this->loadLanguageFile($languageFile);
         }
-        
-        return null;
     }
 
     public static function listLanguages() {
         global $CONFIG;
-        $languageDir = realpath($CONFIG->Language['LanguageDir']).'/';
-        $extension = '.lang';
-        $fileList = glob($languageDir.'*'.$extension);
-        $languageList = array();
 
-        if($fileList !== false) {
-            foreach($fileList as $languageFileName) {
-                $fullName = "Unnamed language";
-                    $languageFile = fopen($languageFileName, 'r');
-                    while (!feof($languageFile)) {
-                        if(substr(($currentLine = fgets($languageFile)), 0, 2) == 'n:') {
-                            $fullName = str_extract($currentLine);
-                            break;
-                        }
-                    }
-                $languageFileName = basename(substr($languageFileName, 0, strlen($extension)*-1));
-                $languageList[$languageFileName] = $fullName;
-            }
+        $languageList = @parse_ini_file(realpath($CONFIG->Language['CoreDir']).'/alias.ini');
+        if(!$languageList) {
+            trigger_error("Failed to load language aliases: ".
+                ErrorHandler::getLastError(), E_USER_WARNING);
         }
-        
         return $languageList;
     }
 
-    protected function loadLanguageFile($filepath, $onlyFullname = false) {
+    public static function getBestLanguage(array $sortedArray) {
+        $availableLanguages = array_keys(self::listLanguages());
+        $secondChoice = false;
+
+        foreach($sortedArray as $searchedLanguage) {
+            $searchedLanguage = self::getValidLanguageCode($searchedLanguage);
+            foreach($availableLanguages as $languageIndex => $availableLanguage) {
+                $availableLanguage = self::getValidLanguageCode($availableLanguage);
+                if($searchedLanguage == $availableLanguage) {
+                    return $availableLanguages[$languageIndex];
+                } elseif(!$secondChoice && 
+                    strtolower(strtok($searchedLanguage, '_')) == $availableLanguage
+                ) {
+                    $secondChoice = $availableLanguages[$languageIndex];
+                }
+            }
+        }
+
+        return $secondChoice;
+    }
+
+    public static function getValidLanguageCode($languageCode) {
+            $languageCode = strtolower(strtr($languageCode, '-', '_'));
+            if($subLanguageOffset = strpos($languageCode, '_')) {
+                $languageCode = substr_replace(
+                    $languageCode,
+                    strtoupper(substr($languageCode, $subLanguageOffset)),
+                    $subLanguageOffset
+                );
+            }
+            return $languageCode;
+    }
+
+    protected function loadLanguageFile($filepath) {
+        $stringArray = array();
         $languageFile = fopen($filepath, 'r');
 
-        $currentString = null;
+        if(!$languageFile) {
+            trigger_error("Cannot open language file $filepath", E_USER_WARNING);
+            return null;
+        }
+
         $lineCounter = 0;
-        while (!feof($languageFile)) {
-            $currentLine = trim(fgets($languageFile));
+        $currentId = null;
+        while(!feof($languageFile)) {
             $lineCounter++;
 
-            if(empty($currentLine)) { 
+            $currentLine = trim(fgets($languageFile));
+            $currentString = str_extract($currentLine);
+
+            if(empty($currentLine) || $currentLine[0] == '#') {
+                continue;
+            } elseif(substr($currentLine, 0, 3) == 'msg') {
+                switch(strtok($currentLine, ' ')) {
+                    case 'msgid':
+                        $currentId = $currentString;
+                        continue 2;
+                    case 'msgstr':
+                        $stringArray[$currentId] = $currentString;
+                        continue 2;
+                }
+            } elseif(!is_null($currentId) && !empty($currentString)) {
+                if(array_key_exists($currentId, $stringArray)) {
+                    $stringArray[$currentId] .= $currentString;
+                } else {
+                    $currentId .= $currentString;
+                }
                 continue;
             }
 
-            switch($currentLine[0]) {
-                case 's':
-                    if($currentLine[1] == ':' && ($tmpString = str_extract(substr($currentLine, 2)))) {
-                        $currentString = $tmpString;
-                        continue 2;
-                    }
-                    break;
-                case 't':
-                    if($currentLine[1] == ':' && isset($currentString) && ($tmpString = str_extract(substr($currentLine, 2)))) {
-                        $this->lookupTable[$currentString] = $tmpString;
-                        $currentString = null;
-                        continue 2;
-                    }
-                    break;
-                case 'n':
-                    if($currentLine[1] == ':' && ($tmpString = str_extract(substr($currentLine, 2)))) {
-                        $this->currentLanguage = $tmpString;
-                        continue 2;
-                    }
-                    break;
-                case '#':
-                    continue 2;
-            }
             trigger_error("Syntax error in language file $filepath on line $lineCounter", E_USER_WARNING);
         }
         fclose($languageFile);
+
+        return $stringArray;
     }
 }
 
