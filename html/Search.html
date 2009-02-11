@@ -31,7 +31,16 @@
             <!--[eval HumanReadable::getFileSize(${File}->Size)]--> 
         </td>
     </tr>
+    <!--[eval @($totalFilesize+=${File}->Size)]-->
 <!--[/foreach]-->
+</tbody>
+<tbody>
+    <tr >
+        <td colspan="3" class="SearchStats">
+            <!--["Total ${EntryCounter} uploaded files"]-->
+            (<!--[eval HumanReadable::getFileSize($totalFilesize)]-->)
+        </td>
+    </tr>
 </tbody>
 </table>
 <!--[/if]-->

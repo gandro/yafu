@@ -155,7 +155,12 @@ class Template {
                     $phpcode = '$tmpTemplate = new Template("'.$parameters.'"); $tmpTemplate->display();';
                     break;
                 case 'eval':
-                    $phpcode = 'echo('.preg_replace('/\$\{?(\w*)\}?/', '\$_TEMPLATE[\'${1}\']', $parameters).');';
+                    $phpcode = (($parameters[0] == '@') ? '(' : 'echo(').
+                                preg_replace(
+                                    '/\$\{?(\w*)\}?/',
+                                    '\$_TEMPLATE[\'${1}\']',
+                                    $parameters
+                                ).');';
                     break;
                 default:
                     trigger_error(t("Template parsing error in file: %s", $this->Filename), E_USER_WARNING); 

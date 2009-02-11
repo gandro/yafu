@@ -39,6 +39,7 @@ while($doMainLoop) {
                 case 'search':
                     $mainTemplate->Content = new Template("Search.html");
                     $mainTemplate->Content->EntryCounter = 0;
+                    $mainTemplate->Content->totalFilesize = 0;
                     $mainTemplate->Content->Query = $query = isset($_GET['q']) ? str_html($_GET['q']) : '';
                     $mainTemplate->Content->SortBy = $sortby = isset($_GET['s']) ? str_html($_GET['s']) : '';
 
@@ -140,6 +141,5 @@ while($doMainLoop) {
             $doMainLoop = true;
     }
 }
-
 @removeLeftOverFiles();
 ?>

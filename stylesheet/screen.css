@@ -200,6 +200,11 @@ table#SearchTable tbody tr.EvenEntry {
     background-color: #f3f3f3;
 }
 
+table#SearchTable tbody tr td.SearchStats {
+    font-size: smaller;
+    text-align: center;
+}
+
 table#FileInfoTable {
     width: 30em;
     text-align: left;

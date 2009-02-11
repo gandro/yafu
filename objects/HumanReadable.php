@@ -44,8 +44,7 @@ class HumanReadable {
     public static function getMimeTypeIcon($mimetype) {
         global $CONFIG;
         $mimetypeIcons = $CONFIG->Template['ImagePath'].'/mimetype/';
-
-        list($type, $subtype) = split('/', $mimetype, 2);
+        list($type, $subtype) = split('/', strtok($mimetype, ';'), 2);
         switch($type) {
             case 'application':
                 switch($subtype) {
