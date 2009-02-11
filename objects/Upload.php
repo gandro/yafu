@@ -70,13 +70,19 @@ class Upload {
                 /* nasty, but documented hack */
                 $uploadedLink =  strtr($uploadedLink, "\n\r\t", "   ");
                 $uri = parse_url($uploadedLink);
-                ini_set('user_agent',
-                    'Yet Another File Upload 2 on '.$_SERVER['SERVER_NAME']."\r\n".
-                    "Referer: ".$uri['scheme'].'://'.$uri['host'].(isset($uri['port'])?':'.$uri['port']:'').'/'
-                );
+
+                $httpContext = stream_context_create(array(
+                    'http' => array(
+                        'method' => "GET",
+                        'user_agent' => "Yet Another File Upload 2 on ".$_SERVER['SERVER_NAME'],
+                        'header' =>
+                            "Referer: ".$uri['scheme'].'://'.$uri['host'].(isset($uri['port'])?':'.$uri['port']:'').'/'
+                    )
+                ));
+
                 unset($uri);
 
-                $urlHandler = @fopen($uploadedLink, 'r');
+                $urlHandler = @fopen($uploadedLink, 'r', false, $httpContext);
                 if(!$urlHandler) {
                     trigger_error(t("Failed to open url \"%s\": %s", 
                         $uploadedLink, ErrorHandler::getLastError()), E_USER_ERROR);
@@ -162,8 +168,19 @@ class Upload {
             return null;
         }
 
-        if(!stream_copy_to_stream($urlHandler, $tmpHandler)) {
+        if(!stream_copy_to_stream($urlHandler, $tmpHandler, $CONFIG->Core['MaxFilesize']+1)) {
             trigger_error(t("Failed to download form url \"%s\".", $uploadedLink), E_USER_ERROR);
+            return null;
+        } elseif(connection_status() != 0 || connection_aborted() != 0) {
+
+            /* Note: On most systems the connection_* functions seem broken.
+             *       This is however a php related bug, so the script may 
+             *       continues, regardless of the actual connection status.
+             */
+
+            fclose($urlHandler);
+            fclose($tmpHandler);
+            unlink($tmpFile);
             return null;
         }
 
