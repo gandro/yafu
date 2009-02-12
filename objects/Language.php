@@ -71,19 +71,13 @@ class Language {
                 if(file_exists($cachedFile) && 
                     (filemtime($cachedFile) > filemtime($languageFile))
                 ) {
-                    $this->lookupTable[$contextName] = include($cachedFile);
+                    $this->lookupTable[$contextName] = unserializeFromFile($cachedFile);
                     if(is_array($this->lookupTable[$contextName])) {
                         continue;
                     }
                 } else {
                     $this->lookupTable[$contextName] = $this->loadLanguageFile($languageFile);
-                    if(!file_put_contents(
-                        $cachedFile, 
-                        "<?php return unserialize(<<<END\n".
-                        serialize($this->lookupTable[$contextName]).
-                        "\nEND\n); ?>",
-                        LOCK_EX
-                    )) {
+                    if(!serializeToFile($this->lookupTable[$contextName], $cachedFile)) {
                         trigger_error("Failed to write cache file: $cachedFile", E_USER_WARNING);
                     }
                     continue;

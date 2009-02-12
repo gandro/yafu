@@ -58,6 +58,20 @@ function str_extract($line) {
     return $fullString;
 }
 
+function serializeToFile($struct, $filename) {
+    return file_put_contents(
+                $filename, 
+                "<?php return unserialize(<<<END\n".
+                serialize($struct).
+                "\nEND\n); ?>",
+                LOCK_EX
+            ) !== false;
+}
+
+function unserializeFromFile($filename) {
+    return include($filename);
+}
+
 function getScriptDuration() {
     global $startTime;
 

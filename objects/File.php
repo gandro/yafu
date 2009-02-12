@@ -58,7 +58,7 @@ class File {
             touch($fileRoot.'data');
         }
 
-        FileList::updateCache();
+        FileList::addToQueue($this->FileID);
 
         $infoArray = array(
                 "Attributes" => array(
@@ -85,7 +85,7 @@ class File {
             foreach(glob($fileRoot.'*') as $fileItem) {
                 unlink($fileItem);
             }
-            FileList::updateCache();
+            FileList::addToQueue($this->FileID);
             return rmdir($fileRoot);
         }
         return false;

@@ -7,13 +7,18 @@ class FileList implements Iterator {
     public function FileList() {
         global $CONFIG;
 
-        if($CONFIG->FileList['UseCaching'] && 
-            ($this->isOldCache() || !$this->loadCachedList())
-        ) {
-            $this->refreshList();
-            $this->writeCachedList();
+        if($CONFIG->FileList['UseCaching']) {
+            if($this->loadCachedList()) {
+                if($this->isOldCache()) {
+                    $this->updateFileList();
+                    $this->writeCachedList();
+                }
+            } else {
+                $this->createFileList();
+                $this->writeCachedList();
+            }
         } else {
-            $this->refreshList();
+            $this->createFileList();
         }
     }
 
@@ -56,14 +61,15 @@ class FileList implements Iterator {
         return count($this->fileList);
     }
 
-    protected function refreshList() {
+    protected function createFileList() {
         global $CONFIG;
+
         $this->fileList = array();
 
         if($filePoolDir = opendir($CONFIG->Core['FilePool'])) {
             while(($fileID = readdir($filePoolDir)) !== false) {
                 if($fileID != '.' && $fileID != '..' && File::exists($fileID)) {
-                    $this->fileList[] = new File($fileID);
+                    $this->fileList[$fileID] = new File($fileID);
                 }
             }
         } else {
@@ -71,51 +77,50 @@ class FileList implements Iterator {
         }
     }
 
+    protected function updateFileList() {
+        global $CONFIG;
+        $changeLog = $CONFIG->Core['FilePool'].'/changeLog';
+
+        $filesToAdd = file($changeLog, FILE_SKIP_EMPTY_LINES|FILE_IGNORE_NEW_LINES);
+
+        foreach($filesToAdd as $fileID) {
+            if(File::exists($fileID)) {
+                $this->fileList[$fileID] = new File($fileID);
+            }
+        }
+        unlink($changeLog);
+    }
+
     protected function loadCachedList() {
         global $CONFIG;
-        $this->fileList = include($CONFIG->FileList['IndexFile']);
-        return is_array($this->fileList);
+
+        if(file_exists($CONFIG->FileList['IndexFile'])) {
+            $this->fileList = unserializeFromFile($CONFIG->FileList['IndexFile']);
+            return is_array($this->fileList);
+        } else {
+            return false;
+        }
     }
 
     protected function writeCachedList() {
         global $CONFIG;
 
-        if(!($indexHandler = fopen($CONFIG->FileList['IndexFile'], 'w'))) {
+        if(!serializeToFile($this->fileList, $CONFIG->FileList['IndexFile'])) {
             trigger_error(t("Failed to cache file index!"), E_USER_WARNING);
         }
-
-        flock($indexHandler, LOCK_EX);
-        fwrite($indexHandler, "<?php return unserialize(<<<END\n");
-        fwrite($indexHandler, serialize($this->fileList));
-        fwrite($indexHandler, "\nEND\n); ?>");
-        flock($indexHandler,LOCK_UN);
-        fclose($indexHandler);
     }
 
     protected function isOldCache() {
         global $CONFIG;
 
-        if(!file_exists($CONFIG->Core['FilePool'].'/.lastUpdate')) {
-            self::updateCache();
-        }
-
-        $timeDiff = @filemtime($CONFIG->FileList['IndexFile']) - 
-            @filemtime($CONFIG->Core['FilePool'].'/.lastUpdate');
-
-        return ((!is_readable($CONFIG->FileList['IndexFile'])) || 
-               ($timeDiff <= 0) || ($timeDiff > 3600));
+        return file_exists($CONFIG->Core['FilePool'].'/changeLog');
     }
 
-    public static function updateCache() {
+    public static function addToQueue($fileID) {
         global $CONFIG;
 
-        /* Note: As you may now, php is dumb: php prior version 5.3 can't 
-         *       touch() a directory under MS Windows.
-        */
-
-        if($CONFIG->FileList['UseCaching']) {
-            touch($CONFIG->Core['FilePool'].'/.lastUpdate');
-        }
+        return file_put_contents($CONFIG->Core['FilePool'].'/changeLog', 
+                                $fileID.PHP_EOL, FILE_APPEND|LOCK_EX);
     }
 
     /* stupid wrappers for Iterator interface */
