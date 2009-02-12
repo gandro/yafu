@@ -67,7 +67,6 @@ class Upload {
             case 'http':
             case 'https':
 
-                /* nasty, but documented hack */
                 $uploadedLink =  strtr($uploadedLink, "\n\r\t", "   ");
                 $uri = parse_url($uploadedLink);
 
