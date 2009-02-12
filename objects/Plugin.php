@@ -9,14 +9,18 @@ abstract class Plugin {
 
     public static $loadedPlugins = array();
 
-    final public static function triggerHook($hookName, $parameters) {
+    final public static function triggerHook($hookName, array $parameters) {
         global $HOOKS;
+
+        $returnString = '';
 
         if(isset($HOOKS[$hookName]) && is_array($HOOKS[$hookName])) {
             foreach($HOOKS[$hookName] as $callbackFunction) {
-                call_user_func_array($callbackFunction, $parameters);
+                $returnString .= call_user_func_array($callbackFunction, $parameters);
             }
         }
+
+        return $returnString;
     }
 
     final public static function loadPlugins() {
@@ -42,21 +46,19 @@ abstract class Plugin {
         }
     }
 
-    final protected function registerHook($hookName, array $callbackFunction, $priority = 0) {
+    final protected function registerHook($hookName, $callbackFunction, $priority = 0) {
         global $HOOKS;
 
         if($priority < -100 || $priority > 100) {
             trigger_error(t("Plugin \"%s\": Priority of hook \"%s\" is out of range", self::$PluginName, $hookName), E_USER_WARNING);
             $priority = ($priority<0) ? -100 : 100;
         }
-
-        $fullCallback = array($this, $callbackFunction);
-        if(isset($HOOKS[$hookName]) && in_array($fullCallback, $HOOKS[$hookName])) {
+        if(isset($HOOKS[$hookName]) && in_array($callbackFunction, $HOOKS[$hookName])) {
             trigger_error(t("Plugin \"%s\": Hook \"%s\" is already registered", self::$PluginName, $hookName), E_USER_WARNING);
             return false;
         }
 
-        $HOOKS[$hookName][$priority] = $fullCallback;
+        $HOOKS[$hookName][$priority] = $callbackFunction;
         krsort($HOOKS[$hookName]);
         return true;
     }

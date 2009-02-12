@@ -104,10 +104,10 @@ class Template {
             $string = preg_replace('/\$\{?(\w*)\}?/', '%s', $string);
 
             if(empty($matches[1])) {
-                $phpcode = 'echo t("'.$string.'");';
+                $phpcode = 'echo(t("'.$string.'"));';
             } else {
                 $variables = '$_TEMPLATE[\''.implode('\'], $_TEMPLATE[\'', $matches[1]).'\']';
-                $phpcode = 'echo t("'.$string.'", '.$variables.');';
+                $phpcode = 'echo(t("'.$string.'", '.$variables.'));';
             }
         } else {
             if(!strpos($sourcecode, ' ')) {
@@ -161,6 +161,9 @@ class Template {
                                     '\$_TEMPLATE[\'${1}\']',
                                     $parameters
                                 ).');';
+                    break;
+                case 'triggerHook':
+                    $phpcode = 'echo(Plugin::triggerHook('.$parameters.', array()));';
                     break;
                 default:
                     trigger_error(t("Template parsing error in file: %s", $this->Filename), E_USER_WARNING); 
