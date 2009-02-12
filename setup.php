@@ -266,7 +266,7 @@ switch (isset($_POST['p']) ? $_POST['p'] : 'introduction'):
             Creating pool for uploaded files...
             <?php 
                 if(!is_dir($CONFIG->Core['FilePool'])) {
-                    mkdir($CONFIG->Core['FilePool']);
+                    mkdir($CONFIG->Core['FilePool'], 0755, true);
                 }
                 is_writeable($CONFIG->Core['FilePool']) 
                     ? success() 
@@ -277,12 +277,26 @@ switch (isset($_POST['p']) ? $_POST['p'] : 'introduction'):
             Creating template cache directory...
             <?php 
                 if(!is_dir($CONFIG->Template['CacheDir'])) {
-                    mkdir($CONFIG->Template['CacheDir']);
+                    mkdir($CONFIG->Template['CacheDir'], 0755, true);
                 }
                 if(is_writeable($CONFIG->Template['CacheDir'])) {
                     success();
                 } else {
                     $CONFIG->Template['UseCaching'] = false;
+                    failed("Failed! Caching disabled!");
+                }
+            ?> 
+        </li>
+        <li>
+            Creating language cache directory...
+            <?php 
+                if(!is_dir($CONFIG->Language['CacheDir'])) {
+                    mkdir($CONFIG->Language['CacheDir'], 0755, true);
+                }
+                if(is_writeable($CONFIG->Language['CacheDir'])) {
+                    success();
+                } else {
+                    $CONFIG->Language['UseCaching'] = false;
                     failed("Failed! Caching disabled!");
                 }
             ?> 
