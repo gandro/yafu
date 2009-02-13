@@ -59,10 +59,11 @@ class Language {
     public function registerContextRoot($contextName, $contextRootDir) {
         global $CONFIG;
 
-        $filePattern = $contextRootDir.'/'.$this->currentLanguage.
-                        '/*'.$CONFIG->Language['Extension'];
+        $languageFiles = glob($contextRootDir.'/'.$this->currentLanguage.
+                        '/*'.$CONFIG->Language['Extension']);
+        $languageFiles = ($languageFiles === false) ? array() : $languageFiles;
 
-        foreach(glob($filePattern) as $languageFile) {
+        foreach($languageFiles as $languageFile) {
             $contextName .= '.'.strtolower(pathinfo($languageFile, PATHINFO_FILENAME));
             if($CONFIG->Language['UseCaching']) {
                 $cachedFile = $CONFIG->Language['CacheDir'].'/'.
