@@ -13,11 +13,11 @@ function getHttpRoot() {
         return $httpRoot;
 }
 
-function str_eval($str) {
+function str_eval($str, $noUTF8 = false) {
     if(version_compare(PHP_VERSION, '5.3.0', '<') && get_magic_quotes_gpc()) {
         $str = stripslashes($str);
     }
-    if(!is_utf8($str)) {
+    if(!$noUTF8 && !is_utf8($str)) {
         $str = utf8_encode($str);
     }
     return $str;

@@ -21,19 +21,19 @@ class Upload {
         return $uploadedFile;
     }
 
-    public static function uploadFromText($uploadedText) {
+    public static function uploadFromText($uploadedText, $name = null, $type = null, $rawContent = false) {
         global $CONFIG;
 
-        $uploadedText = str_eval($uploadedText);
+        $uploadedText = str_eval($uploadedText, $rawContent);
 
         $tmpFile = createTempFile();
         file_put_contents($tmpFile, $uploadedText);
         unset($uploadedText);
 
         $fileID = self::calculateFileID($tmpFile);
-        $filename = t("Textsnippet.txt");
+        $filename = empty($name) ? t("Textsnippet.txt") : str_eval($name);
         $size = filesize($tmpFile);
-        $mimetype = self::detectMimeType($tmpFile, "text/plain; charset=utf-8");
+        $mimetype = self::detectMimeType($tmpFile, empty($type) ? "text/plain; charset=utf-8" : $type);
 
         if($size > $CONFIG->Core['MaxFilesize']) {
             trigger_error(t("The uploaded file exceeds the filesize limit."), E_USER_ERROR);

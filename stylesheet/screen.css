@@ -136,9 +136,24 @@ input#LinkInput {
     width: 30em;
 }
 
+div#TextFormBox {
+    text-align: left;
+    width: 30em;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+input#TextFilename {
+    width: 100%;
+    font-family: monospace;
+    display: block;
+}
+
 textarea#TextInput {
-    width: 35em;
-    height: 4em;
+    width: 100%;
+    height: 5em;
+    font-family: monospace;
+    display: block;
 }
 
 div.InputSpacer {
@@ -203,6 +218,7 @@ table#SearchTable tbody tr.EvenEntry {
 table#SearchTable tbody tr td.SearchStats {
     font-size: smaller;
     text-align: center;
+    padding: 1em;
 }
 
 table#FileInfoTable {
@@ -264,7 +280,7 @@ div#About ul li {
     margin: 0.5em 0em;
 }
 
-div#About hr {
+hr.Spacer {
     visibility: hidden;
 }
 

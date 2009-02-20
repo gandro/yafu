@@ -1,8 +1,7 @@
 <form action="?a=search"  method="get" id="SearchForm">
 <p>
     <label for="SearchInput"><!--["Search for:"]--></label>
-    <input type="hidden" name="a" value="search" />
-    <input size="46" id="SearchInput" name="q" type="text" value="<!--[$Query]-->"/>
+    <input size="46" id="SearchInput" name="q" type="text" value="<!--[$HTML_Query]-->"/>
     <input type="submit" value="<!--["Find"]-->" />
 </p>
 </form>
@@ -10,24 +9,24 @@
 <table id="SearchTable">
 <thead>
     <tr>
-        <th class="Mimetype"><a href="?a=search&amp;s=type&amp;q=<!--[$Query]-->"><!--["Type"]--></a></th>
-        <th class="Filename"><a href="?a=search&amp;s=name&amp;q=<!--[$Query]-->"><!--["Filename"]--></a></th>
-        <th class="Filesize"><a href="?a=search&amp;s=size&amp;q=<!--[$Query]-->"><!--["Size"]--></a></th>
+        <th class="Mimetype" id="MimetypeHeader"><a href="?q=<!--[$URL_Query]-->&amp;s=type"><!--["Type"]--></a></th>
+        <th class="Filename" id="FilenameHeader"><a href="?q=<!--[$URL_Query]-->&amp;s=name"><!--["Filename"]--></a></th>
+        <th class="Filesize" id="FilesizeHeader"><a href="?q=<!--[$URL_Query]-->&amp;s=size"><!--["Size"]--></a></th>
     </tr>
 </thead>
 <tbody>
 <!--[foreach $FileList as $File]-->
     <tr class="<!--[eval ($EntryCounter++%2)?'OddEntry':'EvenEntry']-->">
-        <td class="Mimetype">
+        <td class="Mimetype" headers="MimetypeHeader">
             <img class="MimetypeIcon" src="<!--[eval HumanReadable::getMimeTypeIcon(${File}->Mimetype)]-->" 
                 alt="<!--[eval str_html(${File}->Mimetype)]-->" title="<!--[eval str_html(${File}->Mimetype)]-->"/>
         </td>
-        <td class="Filename" title="<!--[eval str_html(${File}->Filename)]-->">
-            <a href="?a=info&amp;i=<!--[${File}->FileID]-->">
+        <td class="Filename" headers="FilenameHeader" title="<!--[eval str_html(${File}->Filename)]-->">
+            <a href="?i=<!--[${File}->FileID]-->">
                 <!--[eval str_html(HumanReadable::cutString(${File}->Filename, 46))]--> 
             </a>
         </td>
-        <td class="Filesize" title="<!--[${File}->Size]--> <!--["Bytes"]-->">
+        <td class="Filesize" headers="FilesizeHeader" title="<!--[${File}->Size]--> <!--["Bytes"]-->">
             <!--[eval HumanReadable::getFileSize(${File}->Size)]--> 
         </td>
     </tr>

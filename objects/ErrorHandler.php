@@ -74,6 +74,19 @@ class ErrorHandler {
         self::$outputBuffer = '';
     }
 
+    public static function dumpErrors() {
+        if(!empty(self::$outputBuffer)) {
+            self::flushErrorBuffer();
+        }
+
+        if(
+            self::$outputTemplate instanceof Template &&
+            !empty(self::$outputTemplate->{self::$outputVariable})
+        ) {
+            self::$outputTemplate->display();
+        }
+    }
+
     public static function getLastError() {
         return self::$lastErrorMessage;
     }

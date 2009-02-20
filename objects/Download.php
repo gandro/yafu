@@ -1,9 +1,9 @@
 <?php
 
-class FileRequest {
+class Download {
     protected $requestedFile;
 
-    public function FileRequest($fileID) {
+    public function Download($fileID) {
         if(!File::exists($fileID)) {
             header("HTTP/1.1 404 Not Found");
             trigger_error(t("Requested file not found!"), E_USER_ERROR);
@@ -16,14 +16,14 @@ class FileRequest {
         global $CONFIG;
 
         if($_SERVER['HTTP_USER_AGENT'] == 'Yet Another File Upload 2 on '.$_SERVER['SERVER_NAME']) {
-            header('X-Wormhole: Alert');
+            header('X-Wormhole: Alert', true);
             return false;
         }
 
-        header('Accept-Ranges: bytes');
-        header('Content-Transfer-Encoding: binary');
-        header("Last-Modified: ".gmdate("D, d M Y H:i:s", filemtime($this->requestedFile->getDataPath()))." GMT"); 
-        header("Expires: ".gmdate("D, d M Y H:i:s", 0x7FFFFFFF)." GMT"); /* omg, yafu2 is not year 2038 compliant */
+        header('Accept-Ranges: bytes', true);
+        header('Content-Transfer-Encoding: binary', true);
+        header("Last-Modified: ".gmdate("D, d M Y H:i:s", filemtime($this->requestedFile->getDataPath()))." GMT", true); 
+        header("Expires: ".gmdate("D, d M Y H:i:s", 0x7FFFFFFF)." GMT", true); /* omg, yafu2 is not year 2038 compliant */
 
         if($_SERVER['SCRIPT_NAME'] == $_SERVER['PHP_SELF']) {
 
@@ -38,17 +38,17 @@ class FileRequest {
 
             $encodedFilename = ascii_encode($this->requestedFile->Filename);
 
-            header('Content-Disposition: attachment; filename="'.$encodedFilename.'"');
+            header('Content-Disposition: attachment; filename="'.$encodedFilename.'"', true);
         }
 
         if(is_array($fileRange = $this->getFileRange())) {
-            header("HTTP/1.1 206 Partial Content");
-            header('Content-Length: '.$fileRange['size']);
-            header("Content-Range: bytes ".$fileRange['start']."-".$fileRange['end']."/".$this->requestedFile->Size);
+            header("HTTP/1.1 206 Partial Content", true);
+            header('Content-Length: '.$fileRange['size'], true);
+            header("Content-Range: bytes ".$fileRange['start']."-".$fileRange['end']."/".$this->requestedFile->Size, true);
         } else {
-            header('Content-Length: '.$this->requestedFile->Size);
+            header('Content-Length: '.$this->requestedFile->Size, true);
         }
-        header('Content-Type: '.$this->requestedFile->Mimetype);
+        header('Content-Type: '.$this->requestedFile->Mimetype, true);
     }
 
     public function sendData() {

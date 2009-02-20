@@ -9,18 +9,19 @@ abstract class Plugin {
 
     public static $loadedPlugins = array();
 
-    final public static function triggerHook($hookName, array $parameters) {
+    final public static function triggerHook($hookName, array $parameters, $combineOp = '.') {
         global $HOOKS;
-
-        $returnString = '';
 
         if(isset($HOOKS[$hookName]) && is_array($HOOKS[$hookName])) {
             foreach($HOOKS[$hookName] as $callbackFunction) {
-                $returnString .= call_user_func_array($callbackFunction, $parameters);
+                $return = call_user_func_array($callbackFunction, $parameters);
+                $combinedReturns = isset($combinedReturns) ? 
+                    eval('return $combinedReturns'.$combineOp.'$return;') :
+                    $return;
             }
         }
 
-        return $returnString;
+        return isset($combinedReturns) ? $combinedReturns : null;
     }
 
     final public static function loadPlugins() {
@@ -58,7 +59,10 @@ abstract class Plugin {
             return false;
         }
 
+        /* only one hook per priority */
+        while(isset($HOOKS[$hookName][$priority])) $priority--;
         $HOOKS[$hookName][$priority] = $callbackFunction;
+
         krsort($HOOKS[$hookName]);
         return true;
     }

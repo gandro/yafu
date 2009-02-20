@@ -70,12 +70,17 @@ class Template {
 
     public function display() {
         global $CONFIG;
-        $_TEMPLATE = $this->templateVariables;
+        static $displayed = false;
 
-        if($CONFIG->Template['UseCaching'] && $this->cachedFile) {
-            include($this->cachedFile);
-        } else {
-            eval('?>'.$this->compiledCode);
+        if(!$displayed) {
+            $_TEMPLATE = $this->templateVariables;
+
+            if($CONFIG->Template['UseCaching'] && $this->cachedFile) {
+                include($this->cachedFile);
+            } else {
+                eval('?>'.$this->compiledCode);
+            }
+            $displayed = true;
         }
     }
 

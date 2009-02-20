@@ -10,25 +10,24 @@ define("CONFIGFILE", "yafu2.conf");
 set_magic_quotes_runtime(0);
 
 /* start initial setup */
-if(!file_exists(CONFIGFILE) && file_exists("setup.php")) {
+if(file_exists("setup.php") && !file_exists(CONFIGFILE)) {
     include("setup.php");
     exit();
 }
 
 /* init error handling */
 set_error_handler(array('ErrorHandler', 'newError'));
-register_shutdown_function(array('ErrorHandler', 'flushErrorBuffer'));
+register_shutdown_function(array('ErrorHandler', 'dumpErrors'));
 
 /* require additional functions */
 require_once("functions.php");
+register_shutdown_function('removeLeftOverFiles');
 
 /* load config file */
 $CONFIG = new Config(CONFIGFILE);
 
 /* load language file */
-
 $LANGUAGE = new Language();
-//var_dump($LANGUAGE); exit();
 
 /* load plugins */
 $HOOKS = array();
@@ -50,22 +49,32 @@ if(empty($_GET)) {
 
 foreach($_GET as $Command => $Parameter) {
     switch($Command) {
-        case 'a':
-        case 'f':
-        case 'u':
+        case 'f': /*  file  */
+        case 'a': /* action */
+        case 'u': /* upload */
+        case 'q': /*  query */
+        case 'i': /*  info  */
             break 2;
         default:
             $Command = $Parameter = null;
     }
 }
 
-/* initalize main template, execpt for a valid file request */
+/* initialize main template */
+if(!($Command == 'f' && File::exists($Parameter))) {
+    if(isset($_SERVER["HTTP_ACCEPT"]) && 
+        stripos($_SERVER["HTTP_ACCEPT"], "application/xhtml+xml") !== false
+    ) {
+        header("Content-Type: application/xhtml+xml; charset=utf-8");
+    } else {
+        header("Content-Type: text/html; charset=utf-8");
+    }
 
-if(!(isset($_GET['f']) && File::exists($_GET['f']))) {
     $mainTemplate = new Template("Index.html");
     $mainTemplate->httpRoot = getHttpRoot();
     $mainTemplate->Title = strip_tags($CONFIG->Core['Title']);
     $mainTemplate->HTMLTitle = $CONFIG->Core['Title'];
+
     ErrorHandler::setOutput($mainTemplate, 'Error');
 }
 

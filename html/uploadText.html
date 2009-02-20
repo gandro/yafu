@@ -2,8 +2,11 @@
 <form action="?u=text" method="post" id="TextForm">
     <div>
         <label for="TextInput"><!--["Please paste or type your text into the text area below (max. ${MaxFilesize}):"]--></label>
-        <div class="InputSpacer">
-            <textarea name="text" <!--[$Disabled]--> cols="70" rows="8" id="TextInput"></textarea>
+        <div id="TextFormBox" class="InputSpacer">
+            <label for="TextFilename"><!--["Filename:"]--> </label>
+            <input type="text" name="name" id="TextFilename" value="<!--["Textsnippet.txt"]-->"/>
+            <hr class="Spacer" />
+            <textarea name="text" <!--[$Disabled]--> cols="35" rows="5" id="TextInput"></textarea>
         </div>
         <input type="submit" <!--[$Disabled]--> value="<!--["Upload Content"]-->" />
     </div>
