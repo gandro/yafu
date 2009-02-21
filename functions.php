@@ -107,7 +107,8 @@ function removeLeftOverFiles() {
     foreach(addFileForRemoval(null) as $filePattern => $maxAge) {
         $maxTimestamp = time() - $maxAge;
 
-        foreach (glob($filePattern) as $filename) {
+        $filesToRemove = glob($filePattern);
+        foreach((is_array($filesToRemove) ? $filesToRemove : array()) as $filename) {
             if(filemtime($filename) < $maxTimestamp) {
                 unlink($filename);
             }
