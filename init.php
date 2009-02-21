@@ -61,12 +61,11 @@ foreach($_GET as $Command => $Parameter) {
 }
 
 /* initialize main template */
-if(isset($_POST['raw']) && $Command == 'u') {
+if(isset($_GET['raw']) && $Command == 'u') {
 
-    $mainTemplate = new Template("RawInfo.txt");
-    $mainTemplate->setContentType("text/plain");
-    ErrorHandler::setOutput($mainTemplate, 'ErrorMsg');
-    ErrorHandler::$ignoreFatal = true;
+    $rawTemplate = new Template("RawInfo.txt");
+    $rawTemplate->setContentType("text/plain");
+    ErrorHandler::setOutput($rawTemplate, 'ErrorMsg');
 
 } elseif(!($Command == 'f' && @File::exists($Parameter))) {
 

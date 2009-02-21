@@ -7,8 +7,6 @@ class ErrorHandler {
     private static $outputBuffer = '';
     private static $lastErrorMessage = null;
 
-    public static $ignoreFatal = false;
-
     public static function newError($errno, $errstr, $errfile, $errline) {
         global $CONFIG;
 
@@ -50,7 +48,7 @@ class ErrorHandler {
                 self::$outputTemplate->{self::$outputVariable} .= $outputString;
             }
 
-            if(!self::$ignoreFatal && ($errno == E_ERROR || $errno == E_USER_ERROR)) {
+            if($errno == E_ERROR || $errno == E_USER_ERROR) {
                 self::flushErrorBuffer();
                 if(self::$outputTemplate instanceof Template) {
                     self::$outputTemplate->display();

@@ -115,7 +115,7 @@ do {
                             $_POST['text'],
                             isset($_POST['name']) ? $_POST['name'] : null,
                             isset($_POST['type']) ? $_POST['type'] : null,
-                            isset($_POST['raw'])
+                            isset($_GET['raw']) || isset($_POST['raw'])
                         );
                     }
                     break;
@@ -134,24 +134,20 @@ do {
                 ////////////////////////////////////////////////////////////////
             }
 
-            if(isset($_POST['raw'])) {
-                if($uploadedFile instanceof File) {
-                    $mainTemplate->Error = 'none';
-                    $mainTemplate->Link = $uploadedFile->getDownloadLink();
-                    $mainTemplate->Mimetype = $uploadedFile->Mimetype;
-                    $mainTemplate->isImage = (strtok($uploadedFile->Mimetype, '/') == 'image');
-                } else {
-                    $mainTemplate->Error = $uploadedFile;
-                }
-                $mainTemplate->display();
-                break;
-            }
-
             if(!($uploadedFile instanceof File)) {
                 trigger_error(t("There was an error uploading your file!"), E_USER_ERROR);
                 break;
             } else {
                 Plugin::triggerHook("FileUploaded", array(&$uploadedFile));
+            }
+
+            if(isset($_GET['raw'])) {
+                $rawTemplate->uploadedFile = $uploadedFile;
+                $rawTemplate->Link = $uploadedFile->getDownloadLink();
+                $rawTemplate->Mimetype = $uploadedFile->Mimetype;
+                $rawTemplate->Size = $uploadedFile->Size;
+                $rawTemplate->display();
+                break;
             }
 
             /* lets call main switch-case routine again for the info page*/
