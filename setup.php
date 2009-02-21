@@ -194,8 +194,8 @@ switch (isset($_POST['p']) ? $_POST['p'] : 'introduction'):
                 </option>
             <?php endforeach; ?> 
             </select>
-            <input type="checkbox" name="autodedect" value="yes" id="AutoDedect" checked="checked"/>
-            <label for="AutoDedect">Auto dedect language for users</label>
+            <input type="checkbox" name="autodetect" value="yes" id="AutoDetect" checked="checked"/>
+            <label for="AutoDetect">Auto detect language for users</label>
         </p>
         <hr />
         <div>
@@ -223,7 +223,7 @@ switch (isset($_POST['p']) ? $_POST['p'] : 'introduction'):
     $CONFIG->Language['Default'] = isset($_POST['language']) 
         ? $_POST['language']
         : $CONFIG->Language['Default'];
-    $CONFIG->Language['AutoDedect'] = (isset($_POST['autodedect']) && $_POST['autodedect'] == 'yes');
+    $CONFIG->Language['Autotedect'] = (isset($_POST['autodetect']) && $_POST['autodetect'] == 'yes');
 
     function failed($msg = "Failed") { echo('<span class="Fail">'.$msg.'</span>'); }
     function success($msg = "Success") { echo('<span class="Success">'.$msg.'</span>'); }
