@@ -91,7 +91,7 @@ do {
         case 'u': /* upload data */
         ////////////////////////////////////////////////////////////////////////
 
-            $uploadedFile = null;
+            $uploadedFile = 'client.nofile';
             switch($Parameter) {
                 ////////////////////////////////////////////////////////////////
 
@@ -134,14 +134,29 @@ do {
                 ////////////////////////////////////////////////////////////////
             }
 
-            if(is_null($uploadedFile)) {
-                trigger_error(t("There was an error uploading your file!"), E_USER_ERROR);
-            } else {
-                /* lets call main switch-case routine again */
-                $Command = 'i'; $Parameter = $uploadedFile->FileID;
-                continue(2);
+            if(isset($_POST['raw'])) {
+                if($uploadedFile instanceof File) {
+                    $mainTemplate->Error = 'none';
+                    $mainTemplate->Link = $uploadedFile->getDownloadLink();
+                    $mainTemplate->Mimetype = $uploadedFile->Mimetype;
+                    $mainTemplate->isImage = (strtok($uploadedFile->Mimetype, '/') == 'image');
+                } else {
+                    $mainTemplate->Error = $uploadedFile;
+                }
+                $mainTemplate->display();
+                break;
             }
-            break;
+
+            if(!($uploadedFile instanceof File)) {
+                trigger_error(t("There was an error uploading your file!"), E_USER_ERROR);
+                break;
+            } else {
+                Plugin::triggerHook("FileUploaded", array(&$uploadedFile));
+            }
+
+            /* lets call main switch-case routine again for the info page*/
+            $Command = 'i'; $Parameter = $uploadedFile->FileID;
+            continue(2);
 
         ////////////////////////////////////////////////////////////////////////
         case 'q': /* search */
@@ -189,10 +204,11 @@ do {
 
             $mainTemplate->Content = new Template("FileInfo.html");
 
-            $mainTemplate->Content->downloadLink = $File->getDownloadLink();
+            $mainTemplate->Content->File = $File;
             $mainTemplate->Content->FullFilename = str_html($File->Filename);
             $mainTemplate->Content->Filename = str_html(HumanReadable::cutString($File->Filename, 42));
             $mainTemplate->Content->Filesize = HumanReadable::getFilesize($File->Size);
+            $mainTemplate->Content->downloadLink = $File->getDownloadLink();
             $mainTemplate->Content->Mimetype = $File->Mimetype;
             $mainTemplate->Content->MimetypeIcon = HumanReadable::getMimeTypeIcon($File->Mimetype);
             $mainTemplate->Content->isImage = (strtok($File->Mimetype, '/') == 'image');
@@ -204,7 +220,7 @@ do {
         default: /* wtf? */
         ////////////////////////////////////////////////////////////////////////
 
-            if(Plugin::triggerHook("unkownCommand", array(), '||')) {
+            if(Plugin::triggerHook("UnkownCommand", array(), '||')) {
                break;
             }
             /* throw HTTP 404 */

@@ -61,21 +61,21 @@ foreach($_GET as $Command => $Parameter) {
 }
 
 /* initialize main template */
-if(!($Command == 'f' && File::exists($Parameter))) {
-    if(isset($_SERVER["HTTP_ACCEPT"]) && 
-        stripos($_SERVER["HTTP_ACCEPT"], "application/xhtml+xml") !== false
-    ) {
-        header("Content-Type: application/xhtml+xml; charset=utf-8");
-    } else {
-        header("Content-Type: text/html; charset=utf-8");
-    }
+if(isset($_POST['raw']) && $Command == 'u') {
+
+    $mainTemplate = new Template("RawInfo.txt");
+    $mainTemplate->setContentType("text/plain");
+    ErrorHandler::setOutput($mainTemplate, 'ErrorMsg');
+    ErrorHandler::$ignoreFatal = true;
+
+} elseif(!($Command == 'f' && @File::exists($Parameter))) {
 
     $mainTemplate = new Template("Index.html");
     $mainTemplate->httpRoot = getHttpRoot();
     $mainTemplate->Title = strip_tags($CONFIG->Core['Title']);
     $mainTemplate->HTMLTitle = $CONFIG->Core['Title'];
-
     ErrorHandler::setOutput($mainTemplate, 'Error');
+
 }
 
 /* important global used functions */

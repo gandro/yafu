@@ -4,6 +4,7 @@
             <img alt="<!--[$Mimetype]-->" title="<!--[$Mimetype]-->" src="<!--[$MimetypeIcon]-->" class="MimetypeIcon" />
             <strong title="<!--[$FullFilename]-->"><!--[$Filename]--> (<!--[$Filesize]-->)</strong>
             <div id="FileInfoHeaderLinks">
+                <!--[triggerHook "FileInfoHeader"]-->
                 <a href="<!--[$downloadLink]-->"><!--["Download this file"]--></a>
             </div>
         </td>
@@ -22,11 +23,12 @@
     </tr>
 <!--[if $isImage]-->
     <tr>
-        <td><!--["BB-Image"]--> </td>
+        <td><!--["BB-Image:"]--> </td>
         <td>
             <input name="url" type="text" size="42" onfocus="this.select()" 
                 value="[IMG]<!--[$downloadLink]-->[/IMG]" readonly="readonly" />
         </td>
     </tr>
 <!--[/if]-->
+<!--[triggerHook "FileInfoTableBottom"]-->
 </table>

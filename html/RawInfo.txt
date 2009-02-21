@@ -1,0 +1,8 @@
+error: <!--[$Error]--> 
+<!--[if isset($ErrorMsg) && $Error != 'none']-->
+errormsg: <!--[eval ErrorHandler::getLastError()]--> 
+<!--[else]-->
+img: <!--[eval $isImage ? 1 :0 ]--> 
+url: <!--[$Link]--> 
+type: <!--[$Mimetype]--> 
+<!--[/if]-->

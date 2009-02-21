@@ -33,6 +33,23 @@ class HumanReadable {
         }
     }
 
+    public static function parsePHPSize($value) {
+        $value = trim($value); 
+        $lastChar = strtoupper($value[strlen($value)-1]);
+        $value = intval($value);
+
+        switch($lastChar) {
+            case 'G':
+                $value *= 1024;
+            case 'M':
+                $value *= 1024;
+            case 'K':
+                $value *= 1024;
+        }
+
+        return $value;
+    }
+
     public static function cutString($string, $len = 32) {
         if(strlen($string) > $len) {
             return utf8_encode(substr(utf8_decode($string), 0, $len-3).'...');
@@ -113,6 +130,8 @@ class HumanReadable {
             case 'video':
                 return $mimetypeIcons."video.png";
                 break;
+            default:
+                return $mimetypeIcons."application.png";
         }
     }
 }

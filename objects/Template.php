@@ -3,6 +3,8 @@
 class Template {
     protected $Filename = "";
 
+    protected $ContentType = "";
+
     protected $rawCode = null;
     protected $compiledCode = null;
 
@@ -74,13 +76,29 @@ class Template {
 
         if(!$displayed) {
             $_TEMPLATE = $this->templateVariables;
-
+            $this->sendContentTypeHeader();
             if($CONFIG->Template['UseCaching'] && $this->cachedFile) {
                 include($this->cachedFile);
             } else {
                 eval('?>'.$this->compiledCode);
             }
             $displayed = true;
+        }
+    }
+
+    public function setContentType($content) {
+        $this->ContentType = $content;
+    }
+
+    protected function sendContentTypeHeader() {
+        if(!empty($this->ContentType)) {
+            header("Content-Type: ".$this->ContentType, true);
+        } elseif(isset($_SERVER["HTTP_ACCEPT"]) &&
+            (stripos($_SERVER["HTTP_ACCEPT"], "application/xhtml+xml") !== false)
+        ) {
+            header("Content-Type: application/xhtml+xml; charset=utf-8", true);
+        } else {
+            header("Content-Type: text/html; charset=utf-8", true);
         }
     }
 
@@ -168,7 +186,7 @@ class Template {
                                 ).');';
                     break;
                 case 'triggerHook':
-                    $phpcode = 'echo(Plugin::triggerHook('.$parameters.', array()));';
+                    $phpcode = 'echo(Plugin::triggerHook('.$parameters.', array($this)));';
                     break;
                 default:
                     trigger_error(t("Template parsing error in file: %s", $this->Filename), E_USER_WARNING); 
