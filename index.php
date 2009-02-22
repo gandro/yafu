@@ -27,28 +27,34 @@ do {
                 ////////////////////////////////////////////////////////////////
 
                 case 'upload':
-                    $mainTemplate->Content = new Template("Upload.html");
-                    $source = isset($_GET['s']) ? $_GET['s'] : 'file'; /* source */
-                    switch($source) {
-                        case 'file':
-                        default:
-                            $Template = 'uploadFile';
-                            $Disabled = $CONFIG->Core['AllowFileUpload']?'':'disabled="disabled"';
-                            break;
-                        case 'text':
-                            $Template = 'uploadText';
-                            $Disabled = $CONFIG->Core['AllowTextUpload']?'':'disabled="disabled"';;
-                            break;
-                        case 'link':
-                            $Template = 'uploadLink';
-                            $Disabled = $CONFIG->Core['AllowLinkUpload']?'':'disabled="disabled"';;
-                            break;
+
+                    if(!$RAWMODE) {
+                        $mainTemplate->Content = new Template("Upload.html");
+                        $source = isset($_GET['s']) ? $_GET['s'] : 'file'; /* source */
+                        switch($source) {
+                            case 'file':
+                            default:
+                                $Template = 'uploadFile';
+                                $Disabled = $CONFIG->Core['AllowFileUpload']?'':'disabled="disabled"';
+                                break;
+                            case 'text':
+                                $Template = 'uploadText';
+                                $Disabled = $CONFIG->Core['AllowTextUpload']?'':'disabled="disabled"';;
+                                break;
+                            case 'link':
+                                $Template = 'uploadLink';
+                                $Disabled = $CONFIG->Core['AllowLinkUpload']?'':'disabled="disabled"';;
+                                break;
+                        }
+                        $mainTemplate->Content->Source = new Template($Template.".html");
+                        $mainTemplate->Content->Source->Disabled = $Disabled;
+                        $mainTemplate->Content->Source->MaxFilesize = 
+                            HumanReadable::getFilesize($CONFIG->Core['MaxFilesize'], true);
+                        break;
+                    } else {
+                        RawOutput::printUploadInfo();
+                        break(2);
                     }
-                    $mainTemplate->Content->Source = new Template($Template.".html");
-                    $mainTemplate->Content->Source->Disabled = $Disabled;
-                    $mainTemplate->Content->Source->MaxFilesize = 
-                        HumanReadable::getFilesize($CONFIG->Core['MaxFilesize'], true);
-                    break;
 
                 ////////////////////////////////////////////////////////////////
 

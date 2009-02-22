@@ -33,6 +33,9 @@ $LANGUAGE = new Language();
 $HOOKS = array();
 Plugin::loadPlugins();
 
+/* check raw mode */
+$RAWMODE = isset($_GET['raw']);
+
 /* set needed parameters */
 if(empty($_GET)) {
     if($_SERVER['SCRIPT_NAME'] != $_SERVER['PHP_SELF']) {
@@ -61,7 +64,7 @@ foreach($_GET as $Command => $Parameter) {
 }
 
 /* initialize main template */
-if(isset($_GET['raw'])) {
+if($RAWMODE) {
 
     set_error_handler(array('RawOutput', 'printError'));
 

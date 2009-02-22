@@ -13,10 +13,25 @@ class RawOutput {
         Plugin::triggerHook("RawFileInfo", array(&$File));
     }
 
+    public static function printUploadInfo() {
+        global $CONFIG;
+        self::printArray(array(
+            'maxsize' => $CONFIG->Core['MaxFilesize'],
+            'file_upload' => (bool) $CONFIG->Core['AllowFileUpload'],
+            'text_upload' => (bool) $CONFIG->Core['AllowTextUpload'],
+            'link_upload' => (bool) $CONFIG->Core['AllowLinkUpload']
+        ));
+        Plugin::triggerHook("RawUploadInfo", array(&$File));
+    }
+
     public static function printArray(array $output) {
         @header("Content-Type: text/plain; charset=utf-8");
         foreach($output as $key => $value) {
-            echo($key.": ".$value."\n");
+            if(is_bool($value)) {
+                echo($key.": ".(($value) ? 'true' : 'false')."\n");
+            } else {
+                echo($key.": ".$value."\n");
+            }
         }
     }
 
