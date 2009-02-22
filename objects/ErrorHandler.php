@@ -58,7 +58,7 @@ class ErrorHandler {
         }
     }
 
-    public static function setOutput(Template $template, $variable) {
+    public static function setOutputTemplate(Template $template, $variable) {
         self::$outputTemplate = $template;
         self::$outputVariable = $variable;
         self::$outputTemplate->{self::$outputVariable} = '';
@@ -91,4 +91,5 @@ class ErrorHandler {
         return self::$lastErrorMessage;
     }
 }
+
 ?>

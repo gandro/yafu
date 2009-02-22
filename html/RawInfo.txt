@@ -1,9 +1,0 @@
-<!--[if !empty($ErrorMsg)]-->
-error: <!--[eval is_null(Upload::getErrorCode()) ? 'server.unkown' : Upload::getErrorCode()]--> 
-errormsg: <!--[eval ErrorHandler::getLastError()]--> 
-<!--[else]-->
-url: <!--[$Link]--> 
-type: <!--[$Mimetype]--> 
-size: <!--[$Size]--> 
-<!--[triggerHook "RawInfo"]-->
-<!--[/if]-->

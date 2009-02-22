@@ -61,11 +61,9 @@ foreach($_GET as $Command => $Parameter) {
 }
 
 /* initialize main template */
-if(isset($_GET['raw']) && $Command == 'u') {
+if(isset($_GET['raw'])) {
 
-    $rawTemplate = new Template("RawInfo.txt");
-    $rawTemplate->setContentType("text/plain");
-    ErrorHandler::setOutput($rawTemplate, 'ErrorMsg');
+    set_error_handler(array('RawOutput', 'printError'));
 
 } elseif(!($Command == 'f' && @File::exists($Parameter))) {
 
@@ -73,7 +71,7 @@ if(isset($_GET['raw']) && $Command == 'u') {
     $mainTemplate->httpRoot = getHttpRoot();
     $mainTemplate->Title = strip_tags($CONFIG->Core['Title']);
     $mainTemplate->HTMLTitle = $CONFIG->Core['Title'];
-    ErrorHandler::setOutput($mainTemplate, 'Error');
+    ErrorHandler::setOutputTemplate($mainTemplate, 'Error');
 
 }
 

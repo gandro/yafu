@@ -14,7 +14,7 @@ class Upload {
         $uploadedFile = File::create($fileID, $filename, $size, $mimetype);
 
         if(!($uploadedFile->save() && move_uploaded_file($fileArray['tmp_name'], $uploadedFile->getDataPath()))) {
-            self::$errorCode = 'server.no_write';
+            RawOutput::$currentErrorCode = 'server.no_write';
             trigger_error(t("Failed to write file to server."), E_USER_ERROR);
             return null;
         }
@@ -37,17 +37,17 @@ class Upload {
         $mimetype = self::detectMimeType($tmpFile, empty($type) ? "text/plain; charset=utf-8" : $type);
 
         if($size > $CONFIG->Core['MaxFilesize']) {
-            self::$errorCode = 'client.too_big';
+            RawOutput::$currentErrorCode = 'client.too_big';
             trigger_error(t("The uploaded file exceeds the filesize limit."), E_USER_ERROR);
         } elseif($size == 0) {
-            self::$errorCode = 'client.empty_file';
+            RawOutput::$currentErrorCode = 'client.empty_file';
             trigger_error(t("The uploaded file is empty."), E_USER_ERROR);
         }
 
         $uploadedFile = File::create($fileID, $filename, $size, $mimetype);
 
         if(!($uploadedFile->save() && rename($tmpFile, $uploadedFile->getDataPath()))) {
-            self::$errorCode = 'server.no_write';
+            RawOutput::$currentErrorCode = 'server.no_write';
             trigger_error(t("Failed to write file to server."), E_USER_ERROR);
             return null;
         }
@@ -62,8 +62,8 @@ class Upload {
 
         $protocol = parse_url($uploadedLink, PHP_URL_SCHEME);
 
-        if(!in_array($protocol, stream_get_wrappers())) {
-            self::$errorCode = 'client.invalid_url';
+        if(!empty($protocol) && !in_array($protocol, stream_get_wrappers())) {
+            RawOutput::$currentErrorCode = 'client.invalid_url';
             trigger_error(t("The scheme \"%s\" is not supported!", $protocol), E_USER_ERROR);
             return null;
         }
@@ -88,7 +88,7 @@ class Upload {
 
                 $urlHandler = @fopen($uploadedLink, 'r', false, $httpContext);
                 if(!$urlHandler) {
-                    self::$errorCode = 'client.invalid_url';
+                    RawOutput::$currentErrorCode = 'client.invalid_url';
                     trigger_error(t("Failed to open url \"%s\": %s", 
                         $uploadedLink, ErrorHandler::getLastError()), E_USER_ERROR);
                     return null;
@@ -108,7 +108,7 @@ class Upload {
                             break;
                         case 'content-length':
                             if($parameter > $CONFIG->Core['MaxFilesize']) {
-                                self::$errorCode = 'server.too_big';
+                                RawOutput::$currentErrorCode = 'server.too_big';
                                 trigger_error(t("The uploaded file exceeds the filesize limit."), E_USER_ERROR);
                                 return null;
                             }
@@ -120,7 +120,7 @@ class Upload {
                             unset($parameterArray);
                             break;
                         case 'x-wormhole':
-                            self::$errorCode = 'client.invalid_url';
+                            RawOutput::$currentErrorCode = 'client.invalid_url';
                             trigger_error(t("Wormhole Alert! Don't be silly."), E_USER_ERROR);
                             return null;
                             break;
@@ -130,18 +130,18 @@ class Upload {
             case 'ftp':
             case 'ftps':
                 if(!is_file($uploadedLink)) {
-                    self::$errorCode = 'client.invalid_url';
+                    RawOutput::$currentErrorCode = 'client.invalid_url';
                     trigger_error(t("\"%s\" is not a file.", $uploadedLink), E_USER_ERROR);
                     return null;
                 } elseif(filesize($uploadedLink) > $CONFIG->Core['MaxFilesize']) {
-                    self::$errorCode = 'client.too_big';
+                    RawOutput::$currentErrorCode = 'client.too_big';
                     trigger_error(t("The uploaded file exceeds the filesize limit."), E_USER_ERROR);
                     return null;
                 }
 
                 $urlHandler = @fopen($uploadedLink, 'r');
                 if(!$urlHandler) {
-                    self::$errorCode = 'client.invalid_url';
+                    RawOutput::$currentErrorCode = 'client.invalid_url';
                     trigger_error(t("Failed to open url \"%s\": %s", 
                         $uploadedLink, ErrorHandler::getLastError()), E_USER_ERROR);
                     return null;
@@ -150,7 +150,7 @@ class Upload {
             case 'data':
                 $urlHandler = @fopen($uploadedLink, 'r');
                 if(!$urlHandler) {
-                    self::$errorCode = 'client.invalid_url';
+                    RawOutput::$currentErrorCode = 'client.invalid_url';
                     trigger_error(t("Failed to open url \"%s\": %s", 
                         $uploadedLink, ErrorHandler::getLastError()), E_USER_ERROR);
                     return null;
@@ -160,16 +160,16 @@ class Upload {
                 $mimetype = $metaData['mediatype'];
                 break;
             case 'file':
-                    self::$errorCode = 'client.invalid_url';
+                    RawOutput::$currentErrorCode = 'client.invalid_url';
                     trigger_error(t("Select \"hard disk\" as source to upload files from your computer."), E_USER_ERROR);
                     return null;
             case '':
             case false:
-                    self::$errorCode = 'client.invalid_url';
+                    RawOutput::$currentErrorCode = 'client.invalid_url';
                     trigger_error(t("The string \"%s\" is not a valid url.", $uploadedLink), E_USER_ERROR);
                     return null;
             default:
-                     self::$errorCode = 'client.invalid_url';
+                     RawOutput::$currentErrorCode = 'client.invalid_url';
                     trigger_error(t("The scheme \"%s\" is not supported!", $protocol), E_USER_ERROR);
                     return null;
         }
@@ -178,13 +178,13 @@ class Upload {
         $tmpFile = createTempFile();
 
         if(!($tmpHandler = fopen($tmpFile, 'w'))) {
-            self::$errorCode = 'server.no_write';
+            RawOutput::$currentErrorCode = 'server.no_write';
             trigger_error(t("Failed to write file to server."), E_USER_ERROR);
             return null;
         }
 
         if(!stream_copy_to_stream($urlHandler, $tmpHandler, $CONFIG->Core['MaxFilesize']+1)) {
-            self::$errorCode = 'client.invalid_url';
+            RawOutput::$currentErrorCode = 'client.invalid_url';
             trigger_error(t("Failed to download form url \"%s\".", $uploadedLink), E_USER_ERROR);
             return null;
         } elseif(connection_status() != 0 || connection_aborted() != 0) {
@@ -213,17 +213,17 @@ class Upload {
         $mimetype = self::detectMimeType($tmpFile, isset($mimetype) ? $mimetype : 'application/octet-stream');
 
         if($size > $CONFIG->Core['MaxFilesize']) {
-            self::$errorCode = 'client.too_big';
+            RawOutput::$currentErrorCode = 'client.too_big';
             trigger_error(t("The uploaded file exceeds the filesize limit."), E_USER_ERROR);
         } elseif($size == 0) {
-            self::$errorCode = 'client.empty_file';
+            RawOutput::$currentErrorCode = 'client.empty_file';
             trigger_error(t("The uploaded file is empty."), E_USER_ERROR);
         }
 
         $uploadedFile = File::create($fileID, $filename, $size, $mimetype);
 
         if(!($uploadedFile->save() && rename($tmpFile, $uploadedFile->getDataPath()))) {
-            self::$errorCode = 'server.no_write';
+            RawOutput::$currentErrorCode = 'server.no_write';
             trigger_error(t("Failed to write file to server."), E_USER_ERROR);
             return null;
         }
@@ -252,7 +252,7 @@ class Upload {
             foreach($filesToCheck as $checkFile) {
                 if(sha1_file($checkFile) == $sha1Full) {
                     unlink($filepath);
-                    self::$errorCode = 'client.file_exists';
+                    RawOutput::$currentErrorCode = 'client.file_exists';
                     trigger_error(t("This file was already uploaded."), E_USER_ERROR);
                     return null;
                 } 
@@ -274,30 +274,30 @@ class Upload {
         if(isset($fileArray['error']) && $fileArray['error'] !=  UPLOAD_ERR_OK) {
             switch($fileArray['error']) {
                 case UPLOAD_ERR_INI_SIZE: 
-                    self::$errorCode = 'server.too_big';
+                    RawOutput::$currentErrorCode = 'server.too_big';
                     trigger_error(t("The uploaded file exceeds the filesize limit on the server."), E_USER_ERROR);
                     break;
                 case UPLOAD_ERR_PARTIAL:
-                    self::$errorCode = 'client.partial';
+                    RawOutput::$currentErrorCode = 'client.partial';
                     trigger_error(t("The uploaded file was only partially uploaded."), E_USER_ERROR);
                     break;
                 case UPLOAD_ERR_NO_FILE:
-                    self::$errorCode = 'client.no_file';
+                    RawOutput::$currentErrorCode = 'client.no_file';
                     trigger_error(t("No file was uploaded."), E_USER_ERROR);
                     break;
                 case UPLOAD_ERR_NO_TMP_DIR:
-                    self::$errorCode = 'server.no_write';
+                    RawOutput::$currentErrorCode = 'server.no_write';
                     trigger_error(t("No temporary directory on the server"), E_USER_ERROR);
                     break;
                 case UPLOAD_ERR_CANT_WRITE:
-                    self::$errorCode = 'server.no_write';
+                    RawOutput::$currentErrorCode = 'server.no_write';
                     trigger_error(t("Failed to write file to server."), E_USER_ERROR);
                     break;
                 case UPLOAD_ERR_EXTENSION:
-                    self::$errorCode = 'server.extension';
+                    RawOutput::$currentErrorCode = 'server.extension';
                     trigger_error(t("File upload stopped by extension."), E_USER_ERROR);
                 default:
-                    self::$errorCode = 'server.unkown';
+                    RawOutput::$currentErrorCode = 'server.unkown';
                     trigger_error(t("Unkown Error during file upload."), E_USER_ERROR);
             }
         } elseif(
@@ -305,13 +305,13 @@ class Upload {
             !isset($fileArray['size']) || !isset($fileArray['tmp_name']) ||
             !isset($fileArray['error']) || !is_uploaded_file($fileArray['tmp_name'])
         ) {
-            self::$errorCode = 'server.internal';
+            RawOutput::$currentErrorCode = 'server.internal';
             trigger_error(t("Internal error: The \$_FILES array is not valid."), E_USER_ERROR);
         } elseif($fileArray['size'] > $CONFIG->Core['MaxFilesize']) {
-            self::$errorCode = 'client.too_big';
+            RawOutput::$currentErrorCode = 'client.too_big';
             trigger_error(t("The uploaded file exceeds the filesize limit."), E_USER_ERROR);
         } elseif($fileArray['size'] == 0) {
-            self::$errorCode = 'client.too_big';
+            RawOutput::$currentErrorCode = 'client.too_big';
             trigger_error(t("The uploaded file is empty."), E_USER_ERROR);
         } else {
             return true;
@@ -332,12 +332,6 @@ class Upload {
         }
 
         return strtok($mimetype, ',');
-    }
-
-    protected static $errorCode = null;
-
-    public static function getErrorCode() {
-        return self::$errorCode;
     }
 
 }

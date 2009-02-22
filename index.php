@@ -141,15 +141,6 @@ do {
                 Plugin::triggerHook("FileUploaded", array(&$uploadedFile));
             }
 
-            if(isset($_GET['raw'])) {
-                $rawTemplate->uploadedFile = $uploadedFile;
-                $rawTemplate->Link = $uploadedFile->getDownloadLink();
-                $rawTemplate->Mimetype = $uploadedFile->Mimetype;
-                $rawTemplate->Size = $uploadedFile->Size;
-                $rawTemplate->display();
-                break;
-            }
-
             /* lets call main switch-case routine again for the info page*/
             $Command = 'i'; $Parameter = $uploadedFile->FileID;
             continue(2);
@@ -196,6 +187,11 @@ do {
                 /* throw HTTP 404 */
                 $Command = 'a'; $Parameter = '404';
                 continue(2);
+            }
+
+            if(isset($_GET['raw'])) {
+                RawOutput::printFileInfo($File);
+                break;
             }
 
             $mainTemplate->Content = new Template("FileInfo.html");
